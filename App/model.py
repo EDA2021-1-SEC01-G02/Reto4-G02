@@ -26,7 +26,7 @@
 
 
 import config as cf
-from DISClib.ADT.graph import gr
+from DISClib.ADT.graph import gr, numVertices
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
@@ -66,11 +66,12 @@ def newCatalog():
                 "connections": None,
                 "cities": None,
                 "citiesID": None,
+                "airportsID": None
                 }
     
     catalog["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
                                               directed=False,
-                                              size=100000,
+                                              size=200, #TODO: Cambiar a 100000 para la version final
                                               comparefunction=compareairportiata)
 
     catalog["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
@@ -81,7 +82,7 @@ def newCatalog():
     catalog["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
                                       comparefunction=compareID)
 
-    #analyzer["citiesID"] = lt.newList('ARRAY_LIST', compareIds) #Lista que tendra por llave el id de la ciudad y como valor sus datos. Posiblemente se pueda remover dependiendo de como se implemente el mapa de ciudades
+    catalog["airportsID"] = om.newMap(omaptype="BST",comparefunction=compareID)
 
     return catalog
 
@@ -93,33 +94,34 @@ def loadData(catalog):
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file:
+        om.put(catalog["airportsID"],airport["IATA"],airport["id"])
         gr.insertVertex(catalog["routes"],float(airport["id"]))
-        gr.insertVertex(catalog["connections"],float(airport["id"]))
+        #gr.insertVertex(catalog["connections"],float(airport["id"]))
         
     routes_file = cf.data_dir + 'routes-utf8-small.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file:
-        gr.addEdge(catalog["routes"],route["Departure"],route["Destination"],route["distance_km"])
-        gr.addEdge(catalog["connections"],route["Departure"],route["Destination"],1)
+        gr.addEdge(catalog["routes"],getIDbyIATA(catalog,route["Departure"]),getIDbyIATA(catalog,route["Destination"]),float(route["distance_km"]))
+        #gr.addEdge(catalog["connections"],getIDbyIATA(catalog,route["Departure"]),getIDbyIATA(route["Destination"]),1)
 
-    """
     cities_file = cf.data_dir + 'worldcities-utf8.csv'
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
                                 delimiter=",")
     for city in cities_input_file:
-        mp.
-    """
+        om.put(catalog["cities"],city["id"],city)
+    
 
     
-    #return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
-    pass
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(om.size(catalog["cities"])))
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
-#def getIATA():
+def getIDbyIATA(catalog,IATA):
+    return int(om.get(catalog["airportsID"],IATA)["value"])
+
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -128,7 +130,8 @@ def compareairportiata(airportid, keyvalueairport):
     """
     Compara dos aeropuertos
     """
-    airportcode = keyvalueairport['key']
+
+    airportcode = int(keyvalueairport['key'])
     if (airportid == airportcode):
         return 0
     elif (airportid > airportcode):

@@ -55,21 +55,21 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Inicializando ....")
-        temp = controller.newCatalog()
+        catalog = controller.newCatalog()
         print("Cargando información de los archivos ....")
-        catalog = controller.loadData(temp) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
+        resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
         print("\n-------\nGrafo 1\n-------")
+        print("Aeropuertos: ",resultado[0][0])
+        print("Rutas aéreas: ",resultado[0][1])
+        print("Ciudades: ",resultado[0][2])
+        print("Primer aeropuerto cargado:\n",resultado[0][3])
+        print("Ultima ciudad cargada:\n",resultado[0][4])
+        print("\n-------\nGrafo 2\n-------")
         print("Aeropuertos: ",resultado[1][0])
         print("Rutas aéreas: ",resultado[1][1])
         print("Ciudades: ",resultado[1][2])
         print("Primer aeropuerto cargado:\n",resultado[1][3])
         print("Ultima ciudad cargada:\n",resultado[1][4])
-        print("\n-------\nGrafo 2\n-------")
-        print("Aeropuertos: ",resultado[2][0])
-        print("Rutas aéreas: ",resultado[2][1])
-        print("Ciudades: ",resultado[2][2])
-        print("Primer aeropuerto cargado:\n",resultado[2][3])
-        print("Ultima ciudad cargada:\n",resultado[2][4])
 
 
     elif int(inputs[0]) == 2:
