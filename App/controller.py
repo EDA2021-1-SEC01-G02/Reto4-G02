@@ -37,18 +37,18 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de libros
 
-def init():
+def newCatalog():
     """
     Llama la funcion de inicializacion  del modelo.
     """
     # analyzer es utilizado para interactuar con el modelo
-    analyzer = model.newAnalyzer()
-    return analyzer
+    catalog = model.newCatalog()
+    return catalog
 
 # Funciones para la carga de datos
 
-def newCatalog():
-    return model.newCatalog()
+def loadData(catalog):
+    return model.loadData(catalog)
 
 # Funciones de ordenamiento
 

@@ -51,7 +51,7 @@ los mismos.
 
 # Construccion de modelos
 
-def newAnalyzer():
+def newCatalog():
     """
     Inicia el analizador
 
@@ -61,41 +61,41 @@ def newAnalyzer():
     cities: Arbol RBT con los datos de las ciudades
     citiesID: Lista con las ciudades como llave y sus IDs como valor
     """
-    analyzer = {
+    catalog = {
                 "routes": None,
                 "connections": None,
                 "cities": None,
                 "citiesID": None,
                 }
     
-    analyzer["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
+    catalog["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
                                               directed=False,
                                               size=100000,
-                                              comparefunction=compareAirportIATA)
+                                              comparefunction=compareairportiata)
 
-    analyzer["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
+    catalog["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
                                               directed=True,
                                               size=20000,
-                                              comparefunction=compareAirportIATA)
+                                              comparefunction=compareairportiata)
 
-    #analyzer["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
-    #                                  comparefunction=compareDates)
+    catalog["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
+                                      comparefunction=compareID)
 
     #analyzer["citiesID"] = lt.newList('ARRAY_LIST', compareIds) #Lista que tendra por llave el id de la ciudad y como valor sus datos. Posiblemente se pueda remover dependiendo de como se implemente el mapa de ciudades
+
+    return catalog
 
 # Funciones para agregar informacion al catalogo
 
 def loadData(catalog):
-    
+
     airports_file = cf.data_dir + 'airports-utf8-small.csv'
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file:
-        print(airport)
-        gr.insertVertex(catalog["routes"],airport["IATA"])
-        gr.insertVertex(catalog["connections"],airport["IATA"])
+        gr.insertVertex(catalog["routes"],float(airport["id"]))
+        gr.insertVertex(catalog["connections"],float(airport["id"]))
         
-
     routes_file = cf.data_dir + 'routes-utf8-small.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
@@ -119,16 +119,27 @@ def loadData(catalog):
 
 # Funciones de consulta
 
+#def getIATA():
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compareAirportIATA(airportIATA, keyvalueairport):
+def compareairportiata(airportid, keyvalueairport):
     """
     Compara dos aeropuertos
     """
     airportcode = keyvalueairport['key']
-    if (airportIATA == airportcode):
+    if (airportid == airportcode):
         return 0
-    elif (airportIATA > airportcode):
+    elif (airportid > airportcode):
+        return 1
+    else:
+        return -1
+
+def compareID(ID1,ID2):
+    if (ID1 == ID2):
+        return 0
+    elif (ID1 > ID2):
         return 1
     else:
         return -1
