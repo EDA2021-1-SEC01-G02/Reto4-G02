@@ -54,6 +54,8 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        print("Inicializando ....")
+        temp = controller.init()
         print("Cargando información de los archivos ....")
         resultado = controller.loadData() #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
         catalog = resultado[0]
