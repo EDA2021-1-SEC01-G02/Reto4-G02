@@ -71,37 +71,37 @@ def newAnalyzer():
     analyzer["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
                                               directed=False,
                                               size=100000,
-                                              comparefunction=compareStopIds)
+                                              comparefunction=compareAirportIATA)
 
     analyzer["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
                                               directed=True,
                                               size=20000,
-                                              comparefunction=compareStopIds)
+                                              comparefunction=compareAirportIATA)
 
-    analyzer["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
-                                      comparefunction=compareDates)
+    #analyzer["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
+    #                                  comparefunction=compareDates)
 
-    analyzer["citiesID"] = lt.newList('ARRAY_LIST', compareIds) #Lista que tendra por llave el id de la ciudad y como valor sus datos. Posiblemente se pueda remover dependiendo de como se implemente el mapa de ciudades
+    #analyzer["citiesID"] = lt.newList('ARRAY_LIST', compareIds) #Lista que tendra por llave el id de la ciudad y como valor sus datos. Posiblemente se pueda remover dependiendo de como se implemente el mapa de ciudades
 
 # Funciones para agregar informacion al catalogo
 
-def loadData(routes,connections,cities,citiesID):
+def loadData(catalog):
     
     airports_file = cf.data_dir + 'airports-utf8-small.csv'
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file:
         print(airport)
-        gr.insertVertex(routes,airport["IATA"])
-        gr.insertVertex(connections,airport["IATA"])
+        gr.insertVertex(catalog["routes"],airport["IATA"])
+        gr.insertVertex(catalog["connections"],airport["IATA"])
         
 
     routes_file = cf.data_dir + 'routes-utf8-small.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file:
-        gr.addEdge(routes,route["Departure"],route["Destination"],route["distance_km"])
-        gr.addEdge(connections,route["Departure"],route["Destination"],1)
+        gr.addEdge(catalog["routes"],route["Departure"],route["Destination"],route["distance_km"])
+        gr.addEdge(catalog["connections"],route["Departure"],route["Destination"],1)
 
     """
     cities_file = cf.data_dir + 'worldcities-utf8.csv'
@@ -112,12 +112,25 @@ def loadData(routes,connections,cities,citiesID):
     """
 
     
-    return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
+    #return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
+    pass
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def compareAirportIATA(airportIATA, keyvalueairport):
+    """
+    Compara dos aeropuertos
+    """
+    airportcode = keyvalueairport['key']
+    if (airportIATA == airportcode):
+        return 0
+    elif (airportIATA > airportcode):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento
