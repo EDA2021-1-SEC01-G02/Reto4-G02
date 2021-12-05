@@ -34,6 +34,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+import pandas as pd
 import csv
 assert cf
 
@@ -96,24 +97,27 @@ def loadData(catalog):
     for airport in airports_input_file:
         om.put(catalog["airportsID"],airport["IATA"],airport["id"])
         gr.insertVertex(catalog["routes"],float(airport["id"]))
-        #gr.insertVertex(catalog["connections"],float(airport["id"]))
+        gr.insertVertex(catalog["connections"],float(airport["id"]))
         
     routes_file = cf.data_dir + 'routes-utf8-small.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file:
-        gr.addEdge(catalog["routes"],getIDbyIATA(catalog,route["Departure"]),getIDbyIATA(catalog,route["Destination"]),float(route["distance_km"]))
-        #gr.addEdge(catalog["connections"],getIDbyIATA(catalog,route["Departure"]),getIDbyIATA(route["Destination"]),1)
+        vertexDep = getIDbyIATA(catalog,route["Departure"])
+        vertexDes = getIDbyIATA(catalog,route["Destination"])
+        gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"]))
+        if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None):
+            gr.addEdge(catalog["connections"],vertexDep,vertexDes,1)
 
+    cities = 0
     cities_file = cf.data_dir + 'worldcities-utf8.csv'
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
                                 delimiter=",")
     for city in cities_input_file:
         om.put(catalog["cities"],city["id"],city)
-    
-
-    
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(om.size(catalog["cities"])))
+        cities += 1
+        
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(cities))
 
 # Funciones para creacion de datos
 

@@ -58,24 +58,30 @@ while True:
         catalog = controller.newCatalog()
         print("Cargando información de los archivos ....")
         resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
-        print("\n-------\nGrafo 1\n-------")
+        print("\n=== Grafo 1 ===\n")
         print("Aeropuertos: ",resultado[0][0])
         print("Rutas aéreas: ",resultado[0][1])
-        print("Ciudades: ",resultado[0][2])
-        print("Primer aeropuerto cargado:\n",resultado[0][3])
-        print("Ultima ciudad cargada:\n",resultado[0][4])
-        print("\n-------\nGrafo 2\n-------")
+        print("Primer y ultimo aeropuerto cargado en el grafo: ")
+        #print("Primer aeropuerto cargado:\n",resultado[0][2])
+        #print("Ultimo aeropuerto cargado:\n",resultado[0][3])
+        print("\n=== Grafo 2 ===\n")
         print("Aeropuertos: ",resultado[1][0])
         print("Rutas aéreas: ",resultado[1][1])
-        print("Ciudades: ",resultado[1][2])
-        print("Primer aeropuerto cargado:\n",resultado[1][3])
-        print("Ultima ciudad cargada:\n",resultado[1][4])
+        print("Primer y ultimo aeropuerto cargado en el grafo: ")
+        #print("Primer aeropuerto cargado:\n",resultado[1][2])
+        #print("Ultimo aeropuerto cargado:\n",resultado[1][3])
+        print("\n=== Red de ciudades ===\n")
+        print("Numero de ciudades: ",resultado[2][0])
+        print("Primera y ultima ciudad cargada en la estructura de datos: ")
+        #print("Primera ciudad cargada:\n",resultado[2][1])
+        #print("Ultima ciudad cargada:\n",resultado[2][2])
+
 
 
     elif int(inputs[0]) == 2:
         resultado = controller.findConnections(catalog)
         print("Aeropuertos: ",resultado[0]) #Imprimir lista
-        print("Numero de aerpouertos interconectados: ",resultado[1])
+        print("Numero de aeropuertos interconectados: ",resultado[1])
 
     elif int(inputs[0]) == 3:
         codigo1 = input("Codigo IATA del aeropuerto 1: ")
