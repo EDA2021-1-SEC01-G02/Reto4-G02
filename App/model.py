@@ -109,15 +109,14 @@ def loadData(catalog):
         if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None):
             gr.addEdge(catalog["connections"],vertexDep,vertexDes,1)
 
-    cities = 0
     cities_file = cf.data_dir + 'worldcities-utf8.csv'
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
                                 delimiter=",")
     for city in cities_input_file:
         om.put(catalog["cities"],city["id"],city)
-        cities += 1
-        
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(cities))
+    
+    print(catalog["cities"])
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(om.size(catalog["cities"]))))
 
 # Funciones para creacion de datos
 
