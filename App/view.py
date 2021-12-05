@@ -62,19 +62,19 @@ while True:
         print("Aeropuertos: ",resultado[0][0])
         print("Rutas aéreas: ",resultado[0][1])
         print("Primer y ultimo aeropuerto cargado en el grafo: ")
-        #print("Primer aeropuerto cargado:\n",resultado[0][2])
-        #print("Ultimo aeropuerto cargado:\n",resultado[0][3])
+        print(resultado[0][2])
+        
         print("\n=== Grafo 2 ===\n")
         print("Aeropuertos: ",resultado[1][0])
         print("Rutas aéreas: ",resultado[1][1])
         print("Primer y ultimo aeropuerto cargado en el grafo: ")
-        #print("Primer aeropuerto cargado:\n",resultado[1][2])
-        #print("Ultimo aeropuerto cargado:\n",resultado[1][3])
+        print(resultado[0][2])
+
         print("\n=== Red de ciudades ===\n")
         print("Numero de ciudades: ",resultado[2][0])
         print("Primera y ultima ciudad cargada en la estructura de datos: ")
-        #print("Primera ciudad cargada:\n",resultado[2][1])
-        #print("Ultima ciudad cargada:\n",resultado[2][2])
+        print(resultado[2][1])
+        
 
 
 

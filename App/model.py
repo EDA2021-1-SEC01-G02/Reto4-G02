@@ -91,13 +91,22 @@ def newCatalog():
 
 def loadData(catalog):
 
+    firstAirport = True
     airports_file = cf.data_dir + 'airports-utf8-small.csv'
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file:
+        if not firstAirport:
+            lastAirportInfo = airport
+        else:
+            firstAirportInfo = airport
+            firstAirport = False
+
         om.put(catalog["airportsID"],airport["IATA"],airport["id"])
         gr.insertVertex(catalog["routes"],float(airport["id"]))
         gr.insertVertex(catalog["connections"],float(airport["id"]))
+
+    airportDF = firstAndLastAirportsDF(firstAirportInfo,lastAirportInfo)
         
     routes_file = cf.data_dir + 'routes-utf8-small.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
@@ -109,20 +118,46 @@ def loadData(catalog):
         if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None):
             gr.addEdge(catalog["connections"],vertexDep,vertexDes,1)
 
+    firstCity = True
     cities_file = cf.data_dir + 'worldcities-utf8.csv'
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
                                 delimiter=",")
     for city in cities_input_file:
+        if not firstCity:
+            lastCityInfo = city
+        else:
+            firstCityInfo = city
+            firstCity = False
         om.put(catalog["cities"],city["id"],city)
+
+    cityDF = firstAndLastCitiesDF(firstCityInfo,lastCityInfo)
     
-    print(catalog["cities"])
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"])),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(om.size(catalog["cities"]))))
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(om.size(catalog["cities"])),cityDF))
 
 # Funciones para creacion de datos
+
+def firstAndLastAirportsDF(firstinfo,lastinfo):
+    """
+    Crea el DataFrame para mostrar la primera y la ultima ciudad cargada en los grafos de routes y connections
+    """
+    airports = {}
+    airports[0] = firstinfo["IATA"],firstinfo["Name"],firstinfo["City"],firstinfo["Country"],firstinfo["Latitude"],firstinfo["Longitude"]
+    airports[1] = lastinfo["IATA"],lastinfo["Name"],lastinfo["City"],lastinfo["Country"],lastinfo["Latitude"],lastinfo["Longitude"]
+    return pd.DataFrame.from_dict(airports,orient="index",columns=["IATA","Nombre","Ciudad","Pais","Latitud","Longitud"])
+
+def firstAndLastCitiesDF(firstinfo,lastinfo):
+    cities = {}
+    cities[0] = firstinfo["city"],firstinfo["country"],firstinfo["lat"],firstinfo["lng"],firstinfo["population"]
+    cities[1] = lastinfo["city"],lastinfo["country"],lastinfo["lat"],lastinfo["lng"],lastinfo["population"]
+    return pd.DataFrame.from_dict(cities,orient="index",columns=["Ciudad","Pais","Latitud","Longitud","Poblacion"])
+
 
 # Funciones de consulta
 
 def getIDbyIATA(catalog,IATA):
+    """
+    Recibe un IATA de un aeropuerto y retorna el ID del aeropuerto
+    """
     return int(om.get(catalog["airportsID"],IATA)["value"])
 
 
