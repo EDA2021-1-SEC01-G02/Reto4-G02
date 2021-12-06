@@ -175,14 +175,22 @@ def getIDbyIATA(catalog,IATA):
     """
     return int(om.get(catalog["airportsID"],IATA)["value"])
 
-#def findConnections(catalog):
+#Req 3
+def findCluster(catalog,IATA1,IATA2):
+    airport1 = getIDbyIATA(catalog,IATA1) #Retorna un ID segun el IATA
+    airport2 = getIDbyIATA(catalog,IATA2) #Lo de arriba
 
+    airportsScc = scc.KosarajuSCC(catalog["routes"]) #Algoritmo kosaraju
+    numScc = scc.connectedComponents(airportsScc) #Obtener el numero de clusteres en el aeropuerto
+    connectedScc = scc.stronglyConnected(airportsScc,airport1,airport2) #Revisar si ambos aeropuertos estan en el mismo cluster
+
+    return (numScc,connectedScc)
 
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compareairportiata(airportid, keyvalueairport):
+def compareairportiata (airportid, keyvalueairport):
     """
     Compara dos aeropuertos
     """

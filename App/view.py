@@ -80,12 +80,16 @@ while True:
 
     elif int(inputs[0]) == 2:
         resultado = controller.findConnections(catalog)
-        print("Aeropuertos: ",resultado[0]) #Imprimir lista
-        print("Numero de aeropuertos interconectados: ",resultado[1])
+        print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
+        print("Top 5 aeropuertos interconectados: ")
+        print(resultado[1])
 
-    elif int(inputs[0]) == 3:
-        codigo1 = input("Codigo IATA del aeropuerto 1: ")
-        codigo2 = input("Codigo IATA del aeropuerto 2: ")
+    #Req 2
+    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
+        #codigo1 = input("Codigo IATA del aeropuerto 1: ")
+        #codigo2 = input("Codigo IATA del aeropuerto 2: ")
+        codigo1 = "LED"
+        codigo2 = "RTP"
         resultado = controller.findCluster(catalog,codigo1,codigo2)
         print("Numero de clusteres presentes en la red de transporte aereo: ",resultado[0])
         if resultado[1]:

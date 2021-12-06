@@ -56,3 +56,6 @@ def loadData(catalog):
 
 def findConnections(catalog): #Req1
     return model.findConnections(catalog)
+
+def findCluster(catalog,IATA1,IATA2): #Req2
+    return model.findCluster(catalog,IATA1,IATA2)
