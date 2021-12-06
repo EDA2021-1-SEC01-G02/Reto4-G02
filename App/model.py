@@ -80,7 +80,7 @@ def newCatalog():
                                               size=20000,
                                               comparefunction=compareairportiata)
 
-    catalog["cities"] = om.newMap(omaptype='RBT', #Mapa organizado por ids
+    catalog["cities"] = om.newMap(omaptype='BST', #Mapa organizado por ids
                                       comparefunction=compareID)
 
     catalog["airportsID"] = om.newMap(omaptype="BST",comparefunction=compareID)
