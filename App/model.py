@@ -80,16 +80,16 @@ def newCatalog():
                                               size=20000,
                                               comparefunction=compareairportiata)
 
-    catalog["cities"] = om.newMap(omaptype='BST', #Mapa organizado por ids
-                                      comparefunction=compareID)
+    catalog["cities"] = mp.newMap(maptype='PROBING', #Mapa organizado por ids
+                                      )
 
-    catalog["airportsID"] = om.newMap(omaptype="BST",comparefunction=compareID)
+    catalog["airportsID"] = mp.newMap(maptype="PROBING",)
 
     return catalog
 
 # Funciones para agregar informacion al catalogo
 
-def loadData(catalog):
+def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, lastAirportInfo):
     """
     Carga los datos ademas de mostrar informacion solicitada
 
@@ -100,54 +100,37 @@ def loadData(catalog):
         2.(Numero de aeropuertos del grafo no dirigido y numero de rutas del grafo no dirigido)
         3.(Numero de ciudades cargadas en el RBT y dataframe de las ciudades)
     """
-
-    #Crear vertices en los grafos
-    firstAirport = 0 #Comprobantes para obtener el id mas pequeño de los aeropuertos (Para el Dataframe)
-    lastAirport = 0 #Comprobantes para obtener el id mas grande de los aeropuertos (Para el Dataframe)
-    airports_file = cf.data_dir + 'airports-utf8-small.csv' #TODO: Reemplazar para la version final del codigo
-    airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
-                                delimiter=",")
-    for airport in airports_input_file: #Recorrer csv
-        tempid = int(airport["id"]) #Conversion de str a int para comparar valores
-        if (tempid > lastAirport) or (0 == lastAirport): #Si el registro tiene un id mas grande o no hay un id registrado
-            lastAirport = tempid #Reemplaza por el nuevo id
-            lastAirportInfo = airport #Guarda los datos
-        if (tempid < firstAirport) or (0 == firstAirport): #Si el registro tiene un id mas pequeño o no hay un id registrado
-            firstAirport = tempid #Reemplaza por el nuevo id
-            firstAirportInfo = airport #Guarda los datos
-
-        om.put(catalog["airportsID"],airport["IATA"],airport["id"]) #Guarda el id y el IATA del aeropuerto en el bst para cambiar de IATA a id facil
-        gr.insertVertex(catalog["routes"],float(airport["id"])) #Añade vertices a los grafos
-        gr.insertVertex(catalog["connections"],float(airport["id"])) #Lo de arriba
-
-    airportDF = firstAndLastAirportsDF(firstAirportInfo,lastAirportInfo) #Creacion del Dataframe para mostrar datos al usuario
+    #Crear vertices en los grafos   
+    tempid = int(airport["id"]) #Conversion de str a int para comparar valores
+    if (tempid > lastAirport) : #Si el registro tiene un id mas grande o no hay un id registrado
+        lastAirport = tempid #Reemplaza por el nuevo id
+        lastAirportInfo = airport #Guarda los datos
+    if (tempid < firstAirport)or (firstAirport ==0) : #Si el registro tiene un id mas pequeño o no hay un id registrado
+        firstAirport = tempid #Reemplaza por el nuevo id
+        firstAirportInfo = airport #Guarda los datos
+    mp.put(catalog["airportsID"],airport["IATA"],airport["id"]) #Guarda el id y el IATA del aeropuerto en el bst para cambiar de IATA a id facil
+    gr.insertVertex(catalog["routes"],float(airport["id"])) #Añade vertices a los grafos
+    gr.insertVertex(catalog["connections"],float(airport["id"])) #Lo de arriba
+    return firstAirport, lastAirport, firstAirportInfo, lastAirportInfo
         
-    routes_file = cf.data_dir + 'routes-utf8-small.csv' #TODO: Reemplazar para la verion final del codigo
-    routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
-                                delimiter=",")
-    for route in routes_input_file: #Recorrec csv
-        vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
-        vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
-        gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
-        if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None): #Si no hay una ruta que conecte a los aeropuertos ya sea de ida o vuelta:
-            gr.addEdge(catalog["connections"],vertexDep,vertexDes,1) #Añade arco al grafo no dirigido
+def routes(catalog, route):
+    vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
+    vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
+    gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
+    if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None): #Si no hay una ruta que conecte a los aeropuertos ya sea de ida o vuelta:
+        gr.addEdge(catalog["connections"],vertexDep,vertexDes,1) #Añade arco al grafo no dirigido
 
-    firstCity = True #Centinela para guardar la primera ciudad cargada
-    cities_file = cf.data_dir + 'worldcities-utf8.csv' #No cambiar lol
-    cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
-                                delimiter=",")
-    for city in cities_input_file: #Recorrer csv
-        if not firstCity: #Si no es el primer registro del csv
-            lastCityInfo = city #Guardara los datos como si fuera el ultimo registro
-        else: #Si lo es:
-            firstCityInfo = city #Guardara el registro
-            firstCity = False #Para no volver a pasar por esta opcion
-        om.put(catalog["cities"],int(city["id"]),city) #Añade los datos a un mapa, donde la llave sera el id en int y el valor seran los datos
+def addCity(catalog, city, firstCityInfo):
 
-    cityDF = firstAndLastCitiesDF(firstCityInfo,lastCityInfo) #Crea dataframe de la primera y la ultima ciudad cargada para mostrarle al usuario
-    
-    #Retorna con tres tuplas
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(om.size(catalog["cities"])),cityDF))
+    if firstCityInfo == 0: #Si no es el primer registro del csv
+        firstCityInfo = city 
+    lastCityInfo = city
+    mp.put(catalog["cities"],int(city["id"]),city) #Añade los datos a un mapa, donde la llave sera el id en int y el valor seran los datos
+
+    return (firstCityInfo, lastCityInfo)
+
+def first_to_show(catalog, airportDF, cityDF):
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(mp.size(catalog["cities"])),cityDF))
 
 # Funciones para creacion de datos
 
@@ -173,8 +156,10 @@ def getIDbyIATA(catalog,IATA):
     """
     Recibe un IATA de un aeropuerto y retorna el ID del aeropuerto
     """
-    return int(om.get(catalog["airportsID"],IATA)["value"])
-
+    return int(onluMapValue(catalog["airportsID"],IATA))
+def onluMapValue(map, key):
+    pair = mp.get(map, key)
+    return me.getValue(pair)
 #Req 2
 def findCluster(catalog,IATA1,IATA2):
     airport1 = getIDbyIATA(catalog,IATA1) #Retorna un ID segun el IATA
@@ -204,7 +189,7 @@ def compareairportiata (airportid, keyvalueairport):
         return -1
 
 def compareID(ID1,ID2):
-    if (ID1 == ID2):
+    if (ID1== ID2):
         return 0
     elif (ID1 > ID2):
         return 1

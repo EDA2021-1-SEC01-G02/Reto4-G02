@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from App.model import addCity
 import config as cf
 import model
 import csv
@@ -51,7 +52,41 @@ def loadData(catalog):
     """
     Carga los datos
     """
-    return model.loadData(catalog)
+    firstAirport =0
+    lastAirport = 0
+    firstAirportInfo= 'Ho.a'
+    lastAirportInfo = 'Ho.a'
+
+    airports_file = cf.data_dir + 'airports-utf8-small.csv' #TODO: Reemplazar para la version final del codigo
+    airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
+                                delimiter=",")
+    for airport in airports_input_file: #Recorrer csv
+        datos = model.loadAirPorts(catalog, airport, firstAirport, lastAirport, firstAirportInfo, lastAirportInfo)
+        firstAirport = datos[0]
+        lastAirport = datos[1]
+        firstAirportInfo= datos[2]
+        lastAirportInfo = datos[3]
+
+    firstDf = model.firstAndLastAirportsDF(firstAirportInfo, lastAirportInfo)
+
+    routes_file = cf.data_dir + 'routes-utf8-small.csv' #TODO: Reemplazar para la verion final del codigo
+    routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
+                                delimiter=",")
+    for route in routes_input_file: #Recorrec csv
+        model.routes(catalog, route)
+    
+
+    cities_file = cf.data_dir + 'worldcities-utf8.csv' #No cambiar lol
+    cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
+                                delimiter=",")
+    firstCity = 0
+    for city in cities_input_file: #Recorrer csv
+        df2 = model.addCity(catalog, city, firstCity)
+        firstCity = df2[0]
+
+    cityDF = model.firstAndLastCitiesDF(df2[0],df2[1])
+
+    return model.first_to_show(catalog, firstDf, cityDF)
 
 # Funciones de ordenamiento
 
