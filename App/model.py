@@ -149,6 +149,9 @@ def firstAndLastCitiesDF(firstinfo,lastinfo):
     cities[1] = lastinfo["city"],lastinfo["country"],lastinfo["lat"],lastinfo["lng"],lastinfo["population"]
     return pd.DataFrame.from_dict(cities,orient="index",columns=["Ciudad","Pais","Latitud","Longitud","Poblacion"])
 
+def closedAirportDF():
+    return
+
 
 # Funciones de consulta
 
@@ -160,6 +163,7 @@ def getIDbyIATA(catalog,IATA):
 def onluMapValue(map, key):
     pair = mp.get(map, key)
     return me.getValue(pair)
+
 #Req 2
 def findCluster(catalog,IATA1,IATA2):
     airport1 = getIDbyIATA(catalog,IATA1) #Retorna un ID segun el IATA
@@ -170,6 +174,29 @@ def findCluster(catalog,IATA1,IATA2):
     connectedScc = scc.stronglyConnected(airportsScc,airport1,airport2) #Revisar si ambos aeropuertos estan en el mismo cluster
 
     return (numScc,connectedScc)
+
+#Req 5
+def closedAirport(catalog,airportIATA):
+    airportId = getIDbyIATA(catalog,airportIATA)
+    
+    numAirportsDigraph = gr.numVertices(catalog["routes"])
+    numRoutesDigraph = gr.numEdges(catalog["routes"])
+    numAirportsGraph = gr.numVertices(catalog["connections"])
+    numRoutesGraph = gr.numEdges(catalog["connections"])
+    tempAirportsDigraph = gr.adjacents(catalog["routes"],airportId)
+    tempRoutesDigraph = gr.adjacentEdges(catalog["routes"],airportId)
+    tempAirportsGraph = gr.adjacents(catalog["connections"],airportId)
+    tempRoutesGraph = gr.adjacentEdges(catalog["connections"],airportId)
+
+    finalNumAirportsDigraph = numAirportsDigraph - 1
+    finalNumRoutesDigraph = numRoutesDigraph - lt.size(tempRoutesDigraph)
+    finalNumAirportsGraph = numAirportsGraph - 1
+    finalNumRoutesGraph = numRoutesGraph - lt.size(tempRoutesGraph)
+
+    airportsDF = closedAirportDF()
+
+    return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(lt.size(tempAirportsDigraph)),(airportsDF))
+
 
 
 

@@ -74,6 +74,7 @@ while True:
         print("Numero de ciudades: ",resultado[2][0])
         print("Primera y ultima ciudad cargada en la estructura de datos: ")
         print(resultado[2][1])
+        req0 = resultado
         
 
 
@@ -83,6 +84,7 @@ while True:
         print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
         print("Top 5 aeropuertos interconectados: ")
         print(resultado[1])
+        req1 = resultado
 
     #Req 2
     elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario1
@@ -96,6 +98,8 @@ while True:
             print("Los aeropuertos SI se encuentran en el mismo cluster.")
         else:
             print("Los aeropuertos NO se encuentran en el mismo cluster.")
+        req2=resultado
+
 
     elif int(inputs[0]) == 4:
         ciudadOrigen = input("Ciudad de origen: ")
@@ -116,13 +120,21 @@ while True:
         print("Rama mas larga: ",resultado[2]) #Imprimir rama
         print("Lista de ciudades recomendadas: ",resultado[3])
 
+    #Req 5
     elif int(inputs[0]) == 6:
-        aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
+        #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
+        aeropuerto = "DXB"
         resultado = controller.closedAirport(catalog,aeropuerto)
-        print("Número de vuelos de salida afectados: ",resultado[0])
-        print("Numero de vuelos de entrada afectados: ",resultado[1])
-        print("Número de ciudades afectadas: ",resultado[2])
-        print("Lista de ciudades afectadas: ",resultado[3])
+        print("El grafo dirigido cuenta con ",resultado[0][0]," aeropuertos y ",resultado[0][1]," rutas")
+        print("El grafo no dirigido cuenta con ",resultado[1][0]," aeropuertos y ",resultado[1][1]," rutas")
+        print("\n+++ Eliminando aeropuerto con IATA: ",aeropuerto," +++")
+        print("\nEl grafo dirigido tendria ",resultado[2][0]," aeropuertos y ",resultado[2][1]," rutas restantes")
+        print("El grafo no dirigido tendria ",resultado[3][0]," aeropuertos y ",resultado[3][1]," rutas restantes")
+
+        print("Hay",resultado[4],"aeropuertos afectados por la eliminacion de",aeropuerto)
+        print("Lista de aeropuertos afectados: ")
+        print(resultado[5])
+        req5 = resultado
 
     #elif int(inputs[0]) == 7:
     #    pass
