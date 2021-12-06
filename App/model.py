@@ -32,6 +32,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 import pandas as pd
@@ -67,12 +68,13 @@ def newCatalog():
                 "connections": None,
                 "cities": None,
                 "citiesID": None,
-                "airportsID": None
+                "airportsID": None,
+                "airports": None
                 }
     
     catalog["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
                                               directed=True,
-                                              size=200, #TODO: Cambiar a 100000 para la version final
+                                              size=100000, #TODO: Cambiar a 100000 para la version final
                                               comparefunction=compareairportiata)
 
     catalog["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
@@ -83,7 +85,9 @@ def newCatalog():
     catalog["cities"] = mp.newMap(maptype='PROBING', #Mapa organizado por ids
                                       )
 
-    catalog["airportsID"] = mp.newMap(maptype="PROBING",)
+    catalog["airportsID"] = mp.newMap(maptype="PROBING")
+
+    catalog["airports"] = om.newMap(omaptype="RBT",comparefunction=cmpAirportsByID)
 
     return catalog
 
@@ -109,6 +113,7 @@ def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, l
         firstAirport = tempid #Reemplaza por el nuevo id
         firstAirportInfo = airport #Guarda los datos
     mp.put(catalog["airportsID"],airport["IATA"],airport["id"]) #Guarda el id y el IATA del aeropuerto en el bst para cambiar de IATA a id facil
+    om.put(catalog["airports"],int(airport["id"]),airport)
     gr.insertVertex(catalog["routes"],float(airport["id"])) #Añade vertices a los grafos
     gr.insertVertex(catalog["connections"],float(airport["id"])) #Lo de arriba
     return firstAirport, lastAirport, firstAirportInfo, lastAirportInfo
@@ -149,8 +154,33 @@ def firstAndLastCitiesDF(firstinfo,lastinfo):
     cities[1] = lastinfo["city"],lastinfo["country"],lastinfo["lat"],lastinfo["lng"],lastinfo["population"]
     return pd.DataFrame.from_dict(cities,orient="index",columns=["Ciudad","Pais","Latitud","Longitud","Poblacion"])
 
-def closedAirportDF():
-    return
+def closedAirportDF(catalog,airports):
+    ms.sort(airports,cmpAirportsByID)
+    cities = {}
+    size = lt.size(airports)
+    print(size)
+    tempNumCity = 1
+    while (tempNumCity <= 3):
+        temp = lt.getElement(airports,tempNumCity)
+        tempdata = om.get(catalog["airports"],temp)
+        print(tempdata)
+        data = tempdata["value"]
+        cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
+        tempNumCity += 1
+        if tempNumCity > size:
+            break
+        
+    tempNumCity = size-2
+    while (tempNumCity > size-3):
+        temp = lt.getElement(airports,tempNumCity)
+        tempdata = om.get(catalog["airports"],temp)
+        data = tempdata["value"]
+        cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
+        tempNumCity -= 1
+        if (tempNumCity in range(1,4)):
+            break
+    
+    return (pd.DataFrame.from_dict(cities, orient="index", columns=["IATA","Nombre","Ciudad","Pais"]))
 
 
 # Funciones de consulta
@@ -193,7 +223,7 @@ def closedAirport(catalog,airportIATA):
     finalNumAirportsGraph = numAirportsGraph - 1
     finalNumRoutesGraph = numRoutesGraph - lt.size(tempRoutesGraph)
 
-    airportsDF = closedAirportDF()
+    airportsDF = closedAirportDF(catalog,tempAirportsDigraph)
 
     return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(lt.size(tempAirportsDigraph)),(airportsDF))
 
@@ -222,5 +252,11 @@ def compareID(ID1,ID2):
         return 1
     else:
         return -1
+
+def cmpAirportsByID(airport1,airport2):
+    if (airport1 < airport2):
+        return True
+    else:
+        return False
 
 # Funciones de ordenamiento
