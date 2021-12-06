@@ -71,12 +71,12 @@ def newCatalog():
                 }
     
     catalog["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
-                                              directed=False,
+                                              directed=True,
                                               size=200, #TODO: Cambiar a 100000 para la version final
                                               comparefunction=compareairportiata)
 
     catalog["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
-                                              directed=True,
+                                              directed=False,
                                               size=20000,
                                               comparefunction=compareairportiata)
 
@@ -175,7 +175,7 @@ def getIDbyIATA(catalog,IATA):
     """
     return int(om.get(catalog["airportsID"],IATA)["value"])
 
-#Req 3
+#Req 2
 def findCluster(catalog,IATA1,IATA2):
     airport1 = getIDbyIATA(catalog,IATA1) #Retorna un ID segun el IATA
     airport2 = getIDbyIATA(catalog,IATA2) #Lo de arriba

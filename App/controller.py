@@ -39,7 +39,7 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 def newCatalog():
     """
-    Llama la funcion de inicializacion  del modelo.
+    Llama la funcion de inicializacion del modelo.
     """
     # analyzer es utilizado para interactuar con el modelo
     catalog = model.newCatalog()
@@ -48,6 +48,9 @@ def newCatalog():
 # Funciones para la carga de datos
 
 def loadData(catalog):
+    """
+    Carga los datos
+    """
     return model.loadData(catalog)
 
 # Funciones de ordenamiento

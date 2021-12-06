@@ -85,7 +85,7 @@ while True:
         print(resultado[1])
 
     #Req 2
-    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
+    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario1
         #codigo1 = input("Codigo IATA del aeropuerto 1: ")
         #codigo2 = input("Codigo IATA del aeropuerto 2: ")
         codigo1 = "LED"
