@@ -53,3 +53,6 @@ def loadData(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def findConnections(catalog): #Req1
+    return model.findConnections(catalog)
