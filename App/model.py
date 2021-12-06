@@ -170,7 +170,7 @@ def closedAirportDF(catalog,airports):
         if tempNumCity > size:
             break
         
-    tempNumCity = size-2
+    tempNumCity = size
     while (tempNumCity > size-3):
         temp = lt.getElement(airports,tempNumCity)
         tempdata = om.get(catalog["airports"],temp)
