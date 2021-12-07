@@ -159,27 +159,22 @@ def closedAirportDF(catalog,airports):
     ms.sort(airports,cmpAirportsByID)
     cities = {}
     size = lt.size(airports)
-    print(size)
-    tempNumCity = 1
-    while (tempNumCity <= 3):
-        temp = lt.getElement(airports,tempNumCity)
-        tempdata = mp.get(catalog["airports"],temp)
-        print(tempdata)
-        data = tempdata["value"]
-        cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
-        tempNumCity += 1
-        if tempNumCity > size:
+    for city in range(1,4):
+        if (city > size):
             break
+        else:
+            temp = lt.getElement(airports,city)
+            tempdata = mp.get(catalog["airports"],temp)
+            print(tempdata)
+            data = tempdata["value"]
+            cities[city] = data["IATA"],data["Name"],data["City"],data["Country"]
         
-    tempNumCity = size
-    while (tempNumCity > size-3):
-        temp = lt.getElement(airports,tempNumCity)
-        tempdata = mp.get(catalog["airports"],temp)
-        data = tempdata["value"]
-        cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
-        tempNumCity -= 1
-        if (tempNumCity in range(1,4)):
-            break
+    for city in range (size-3,size+1):
+        if not (city in range(1,4)):
+            temp = lt.getElement(airports,city)
+            tempdata = mp.get(catalog["airports"],temp)
+            data = tempdata["value"]
+            cities[city] = data["IATA"],data["Name"],data["City"],data["Country"]
     
     return (pd.DataFrame.from_dict(cities, orient="index", columns=["IATA","Nombre","Ciudad","Pais"]))
 
@@ -246,7 +241,7 @@ def findCluster(catalog,IATA1,IATA2):
     airport2 = getIDbyIATA(catalog,IATA2) #Lo de arriba
 
     airportsScc = scc.KosarajuSCC(catalog["routes"]) #Algoritmo kosaraju
-    numScc = scc.connectedComponents(airportsScc) #Obtener el numero de clusteres en el aeropuerto
+    numScc = scc.connectedComponents(airportsScc) #Obtener el numero de clusteres en el grafo
     connectedScc = scc.stronglyConnected(airportsScc,airport1,airport2) #Revisar si ambos aeropuertos estan en el mismo cluster
 
     return (numScc,connectedScc)
@@ -269,7 +264,7 @@ def closedAirport(catalog,airportIATA):
     finalNumAirportsGraph = numAirportsGraph - 1
     finalNumRoutesGraph = numRoutesGraph - lt.size(tempRoutesGraph)
 
-    airportsDF = closedAirportDF(catalog,tempAirportsDigraph)
+    airportsDF = closedAirportDF(catalog,tempAirportsGraph)
 
     return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(lt.size(tempAirportsDigraph)),(airportsDF))
 
