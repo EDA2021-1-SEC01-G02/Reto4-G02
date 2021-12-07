@@ -126,10 +126,16 @@ while True:
         #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
         aeropuerto = "DXB"
         resultado = controller.closedAirport(catalog,aeropuerto)
-        print("Número de vuelos de salida afectados: ",resultado[0])
-        print("Numero de vuelos de entrada afectados: ",resultado[1])
-        print("Número de ciudades afectadas: ",resultado[2])
-        print("Lista de ciudades afectadas: ",resultado[3])
+        print("--- Datos originales ---")
+        print("El grafo dirigido cuenta con",resultado[0][0],"aeropuertos y",resultado[0][1],"rutas.")
+        print("El grafo no dirigido cuenta con",resultado[1][0],"aeropuertos y",resultado[1][1],"rutas.")
+
+        print("--- Nuevos datos ---")
+        print("El grafo dirigido contaria con",resultado[2][0],"aeropuertos y",resultado[2][1],"rutas restantes.")
+        print("El grafo no dirigido contaria con",resultado[3][0],"aeropuertos y",resultado[3][1],"rutas restantes.")
+        print("\nHay",resultado[4][0],"aeropuertos afectados por el cierre de",aeropuerto)
+        print("Los tres primeros y tres ultimoa esropuertos afectados son: ")
+        print(resultado[4][1])
 
     #elif int(inputs[0]) == 7:
     #    pass

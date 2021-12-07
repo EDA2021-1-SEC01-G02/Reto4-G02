@@ -35,7 +35,7 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
-from haversine import haversine, Unit
+#from haversine import haversine, Unit
 import math as math
 import pandas as pd
 import csv
@@ -175,7 +175,6 @@ def addCity(catalog, city, firstCityInfo, cont):
 
 def first_to_show(catalog, airportDF, cityDF, cont):
     return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(lt.size(gr.vertices(catalog["connections"])),gr.numEdges(catalog["connections"])),(str(cont),cityDF))
-
 # Funciones para creacion de datos
 
 def firstAndLastAirportsDF(firstinfo,lastinfo):
@@ -214,7 +213,7 @@ def closedAirportDF(catalog,airports):
             data = tempdata["value"]
             cities[city] = data["IATA"],data["Name"],data["City"],data["Country"]
     
-    return (pd.DataFrame.from_dict(cities, orient="index", columns=["IATA","Nombre","Ciudad","Pais"]))
+    return (size,pd.DataFrame.from_dict(cities, orient="index", columns=["IATA","Nombre","Ciudad","Pais"]))
 
 
 # Funciones de consulta
@@ -292,10 +291,9 @@ def closedAirport(catalog,airportIATA):
     finalNumAirportsGraph = numAirportsGraph - 1
     finalNumRoutesGraph = numRoutesGraph - gr.degree(catalog["connections"],airportId)
 
-    tempAirportsDigraph
-    airportsDF = closedAirportDF(catalog,gr.adjacents)
+    airportsDF = closedAirportDF(catalog,gr.adjacents(catalog["connections"],airportId))
 
-    return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(lt.size(tempAirportsDigraph)),(airportsDF))
+    return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(airportsDF))
 
 
 
