@@ -84,8 +84,7 @@ def newCatalog():
                                               size=20000,
                                               comparefunction=compareairportiata)
 
-    catalog["cities"] = mp.newMap(maptype='PROBING', #Mapa organizado por ids
-                                      )
+    catalog["cities"] = mp.newMap(maptype='PROBING')
 
     catalog["airportsID"] = mp.newMap(maptype="PROBING")
 
