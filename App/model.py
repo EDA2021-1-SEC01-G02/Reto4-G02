@@ -35,6 +35,8 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from haversine import haversine, Unit
+import math as math
 import pandas as pd
 import csv
 assert cf
@@ -125,6 +127,9 @@ def routes(catalog, route):
     edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
     if edge is None:
         gr.addEdge(catalog["connections"],vertexDep,vertexDes,0) #Añade arco al grafo no dirigido
+
+def calDis(first, sec):
+    return haversine(first, sec)
 
 def addCity(catalog, city, firstCityInfo):
 
