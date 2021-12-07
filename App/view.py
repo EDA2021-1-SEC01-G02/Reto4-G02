@@ -116,8 +116,10 @@ while True:
         print("Rama mas larga: ",resultado[2]) #Imprimir rama
         print("Lista de ciudades recomendadas: ",resultado[3])
 
+    #Req5
     elif int(inputs[0]) == 6:
-        aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
+        #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
+        aeropuerto = "DXB"
         resultado = controller.closedAirport(catalog,aeropuerto)
         print("Número de vuelos de salida afectados: ",resultado[0])
         print("Numero de vuelos de entrada afectados: ",resultado[1])

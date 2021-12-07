@@ -52,7 +52,7 @@ def loadData(catalog):
     """
     Carga los datos
     """
-    firstAirport =0
+    firstAirport = 0
     lastAirport = 0
     firstAirportInfo= 'Ho.a'
     lastAirportInfo = 'Ho.a'

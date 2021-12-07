@@ -219,12 +219,6 @@ def crTable(lst, len):
         temp = lt.getElement(lst, pos)
         dict[pos] = temp
     return (pd.DataFrame.from_dict(dict, orient = 'index')[['Name', 'City', 'Country', 'IATA', 'Connections','inbound', 'outbound']])
- 
-def cmpDegree(item1, item2):
-    if item1['Connections'] > item2['Connections'] :
-        return True
-    else:
-        return False
 
 def getIDbyIATA(catalog,IATA):
     """
@@ -248,23 +242,20 @@ def findCluster(catalog,IATA1,IATA2):
 
 #Req 5
 def closedAirport(catalog,airportIATA):
-    airportId = getIDbyIATA(catalog,airportIATA)
+    airportId = getIDbyIATA(catalog,airportIATA) #Obtiene la id de un puerto a traves de el IATA
     
-    numAirportsDigraph = gr.numVertices(catalog["routes"])
+    numAirportsDigraph = gr.numVertices(catalog["routes"]) #Valores originales de los grafos
     numRoutesDigraph = gr.numEdges(catalog["routes"])
     numAirportsGraph = gr.numVertices(catalog["connections"])
     numRoutesGraph = gr.numEdges(catalog["connections"])
-    tempAirportsDigraph = gr.adjacents(catalog["routes"],airportId)
-    tempRoutesDigraph = gr.adjacentEdges(catalog["routes"],airportId)
-    tempAirportsGraph = gr.adjacents(catalog["connections"],airportId)
-    tempRoutesGraph = gr.adjacentEdges(catalog["connections"],airportId)
 
     finalNumAirportsDigraph = numAirportsDigraph - 1
-    finalNumRoutesDigraph = numRoutesDigraph - lt.size(tempRoutesDigraph)
+    finalNumRoutesDigraph = numRoutesDigraph - (gr.indegree(catalog["routes"],airportId)+gr.outdegree(catalog["routes"],airportId))
     finalNumAirportsGraph = numAirportsGraph - 1
-    finalNumRoutesGraph = numRoutesGraph - lt.size(tempRoutesGraph)
+    finalNumRoutesGraph = numRoutesGraph - gr.degree(catalog["connections"],airportId)
 
-    airportsDF = closedAirportDF(catalog,tempAirportsGraph)
+    tempAirportsDigraph
+    airportsDF = closedAirportDF(catalog,gr.adjacents)
 
     return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(lt.size(tempAirportsDigraph)),(airportsDF))
 
@@ -300,4 +291,9 @@ def cmpAirportsByID(airport1,airport2):
     else:
         return False
 
+def cmpDegree(item1, item2):
+    if item1['Connections'] > item2['Connections'] :
+        return True
+    else:
+        return False
 # Funciones de ordenamiento
