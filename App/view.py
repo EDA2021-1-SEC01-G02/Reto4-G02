@@ -74,20 +74,18 @@ while True:
         print("Numero de ciudades: ",resultado[2][0])
         print("Primera y ultima ciudad cargada en la estructura de datos: ")
         print(resultado[2][1])
-        req0 = resultado
         
-
-
 
     elif int(inputs[0]) == 2:
         resultado = controller.findConnections(catalog)
         print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
+        print("Aeropuertos dentro de la red: ", resultado[1] )
         print("Top 5 aeropuertos interconectados: ")
-        print(resultado[1])
-        req1 = resultado
+        print(resultado[2])
+
 
     #Req 2
-    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario1
+    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
         #codigo1 = input("Codigo IATA del aeropuerto 1: ")
         #codigo2 = input("Codigo IATA del aeropuerto 2: ")
         codigo1 = "LED"
@@ -98,8 +96,6 @@ while True:
             print("Los aeropuertos SI se encuentran en el mismo cluster.")
         else:
             print("Los aeropuertos NO se encuentran en el mismo cluster.")
-        req2=resultado
-
 
     elif int(inputs[0]) == 4:
         ciudadOrigen = input("Ciudad de origen: ")
@@ -120,21 +116,13 @@ while True:
         print("Rama mas larga: ",resultado[2]) #Imprimir rama
         print("Lista de ciudades recomendadas: ",resultado[3])
 
-    #Req 5
     elif int(inputs[0]) == 6:
-        #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
-        aeropuerto = "DXB"
+        aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
         resultado = controller.closedAirport(catalog,aeropuerto)
-        print("El grafo dirigido cuenta con ",resultado[0][0]," aeropuertos y ",resultado[0][1]," rutas")
-        print("El grafo no dirigido cuenta con ",resultado[1][0]," aeropuertos y ",resultado[1][1]," rutas")
-        print("\n+++ Eliminando aeropuerto con IATA: ",aeropuerto," +++")
-        print("\nEl grafo dirigido tendria ",resultado[2][0]," aeropuertos y ",resultado[2][1]," rutas restantes")
-        print("El grafo no dirigido tendria ",resultado[3][0]," aeropuertos y ",resultado[3][1]," rutas restantes")
-
-        print("Hay",resultado[4],"aeropuertos afectados por la eliminacion de",aeropuerto)
-        print("Lista de aeropuertos afectados: ")
-        print(resultado[5])
-        req5 = resultado
+        print("Número de vuelos de salida afectados: ",resultado[0])
+        print("Numero de vuelos de entrada afectados: ",resultado[1])
+        print("Número de ciudades afectadas: ",resultado[2])
+        print("Lista de ciudades afectadas: ",resultado[3])
 
     #elif int(inputs[0]) == 7:
     #    pass

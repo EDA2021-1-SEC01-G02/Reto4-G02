@@ -26,7 +26,7 @@
 
 
 import config as cf
-from DISClib.ADT.graph import gr, numVertices
+from DISClib.ADT.graph import gr, numVertices, outdegree
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
@@ -87,7 +87,7 @@ def newCatalog():
 
     catalog["airportsID"] = mp.newMap(maptype="PROBING")
 
-    catalog["airports"] = om.newMap(omaptype="RBT",comparefunction=cmpAirportsByID)
+    catalog["airports"] = mp.newMap(maptype="PROBING")
 
     return catalog
 
@@ -113,7 +113,7 @@ def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, l
         firstAirport = tempid #Reemplaza por el nuevo id
         firstAirportInfo = airport #Guarda los datos
     mp.put(catalog["airportsID"],airport["IATA"],airport["id"]) #Guarda el id y el IATA del aeropuerto en el bst para cambiar de IATA a id facil
-    om.put(catalog["airports"],int(airport["id"]),airport)
+    mp.put(catalog["airports"],int(airport["id"]),airport)
     gr.insertVertex(catalog["routes"],float(airport["id"])) #Añade vertices a los grafos
     gr.insertVertex(catalog["connections"],float(airport["id"])) #Lo de arriba
     return firstAirport, lastAirport, firstAirportInfo, lastAirportInfo
@@ -122,8 +122,9 @@ def routes(catalog, route):
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
     gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
-    if ((gr.getEdge(catalog["connections"],vertexDep,vertexDes)) == None) and ((gr.getEdge(catalog["connections"],vertexDes,vertexDep)) == None): #Si no hay una ruta que conecte a los aeropuertos ya sea de ida o vuelta:
-        gr.addEdge(catalog["connections"],vertexDep,vertexDes,1) #Añade arco al grafo no dirigido
+    edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
+    if edge is None:
+        gr.addEdge(catalog["connections"],vertexDep,vertexDes,0) #Añade arco al grafo no dirigido
 
 def addCity(catalog, city, firstCityInfo):
 
@@ -135,7 +136,7 @@ def addCity(catalog, city, firstCityInfo):
     return (firstCityInfo, lastCityInfo)
 
 def first_to_show(catalog, airportDF, cityDF):
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(gr.numVertices(catalog["connections"]),gr.numEdges(catalog["connections"])),(str(mp.size(catalog["cities"])),cityDF))
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(lt.size(gr.vertices(catalog["connections"])),gr.numEdges(catalog["connections"])),(str(mp.size(catalog["cities"])),cityDF))
 
 # Funciones para creacion de datos
 
@@ -162,7 +163,7 @@ def closedAirportDF(catalog,airports):
     tempNumCity = 1
     while (tempNumCity <= 3):
         temp = lt.getElement(airports,tempNumCity)
-        tempdata = om.get(catalog["airports"],temp)
+        tempdata = mp.get(catalog["airports"],temp)
         print(tempdata)
         data = tempdata["value"]
         cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
@@ -173,7 +174,7 @@ def closedAirportDF(catalog,airports):
     tempNumCity = size
     while (tempNumCity > size-3):
         temp = lt.getElement(airports,tempNumCity)
-        tempdata = om.get(catalog["airports"],temp)
+        tempdata = mp.get(catalog["airports"],temp)
         data = tempdata["value"]
         cities[tempNumCity] = data["IATA"],data["Name"],data["City"],data["Country"]
         tempNumCity -= 1
@@ -184,6 +185,51 @@ def closedAirportDF(catalog,airports):
 
 
 # Funciones de consulta
+
+def findConnections(catalog):
+    cont2 = 0
+    cont = 0
+    items = gr.vertices(catalog['routes'])
+    lst = lt.newList('ARRAY_LIST')
+    for pos in range(0, lt.size(items)):
+        ver = lt.getElement(items,pos)
+        inbound = gr.indegree(catalog['connections'], ver)
+        outdegree = gr.outdegree(catalog['connections'], ver)
+        inbound2 = gr.indegree(catalog['routes'], ver)
+        outdegree2 = gr.outdegree(catalog['routes'], ver)
+        degree = inbound+ inbound2 + outdegree + outdegree2
+        degree1 =gr.degree(catalog['routes'], ver)
+        degree2 = gr.degree(catalog['connections'], ver)
+        cont2 = degree1 + degree2
+
+        item = onluMapValue(catalog['airports'], ver)
+        item['inbound'] = inbound + inbound2
+        item['outbound'] = outdegree + outdegree2
+        item['Connections'] = degree 
+        item['Connections False'] = cont2
+        lt.addLast(lst, item)
+        if degree > 0 :
+            cont +=1  
+    ms.sort(lst, cmpDegree)
+    tabla = crTable(lst, 6)
+    numv = gr.numVertices(catalog['routes'])
+    
+    return numv,cont, tabla
+
+def crTable(lst, len):
+    dict = {}
+    if len > lt.size(lst):
+        len = lt.size(lst)
+    for pos in range(1, len):
+        temp = lt.getElement(lst, pos)
+        dict[pos] = temp
+    return (pd.DataFrame.from_dict(dict, orient = 'index')[['Name', 'City', 'Country', 'IATA', 'Connections','inbound', 'outbound']])
+ 
+def cmpDegree(item1, item2):
+    if item1['Connections'] > item2['Connections'] :
+        return True
+    else:
+        return False
 
 def getIDbyIATA(catalog,IATA):
     """
