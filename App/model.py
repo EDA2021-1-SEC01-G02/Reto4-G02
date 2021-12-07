@@ -90,9 +90,28 @@ def newCatalog():
 
     catalog["airports"] = mp.newMap(maptype="PROBING")
 
+    catalog['airCity'] =  mp.newMap(maptype="PROBING")
+
     return catalog
 
 # Funciones para agregar informacion al catalogo
+
+def getCityCor(catalog, city):
+    temp = mp.get(catalog['cities'], city)
+    cor =  temp['lat'], temp['lng']
+    return cor
+def getCityInfo(catalog, city):
+    lst = onluMapValue(catalog['cities'], city)
+    return slecTable(lst), lst
+
+def slecTable(lst):
+    dict ={}
+    len = lt.size(lst)+1
+    for pos in range(1, len):
+        temp = lt.getElement(lst, pos)
+        dict[pos] = temp
+    return (pd.DataFrame.from_dict(dict, orient = 'index'))
+
 
 def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, lastAirportInfo):
     """
@@ -105,6 +124,8 @@ def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, l
         2.(Numero de aeropuertos del grafo no dirigido y numero de rutas del grafo no dirigido)
         3.(Numero de ciudades cargadas en el RBT y dataframe de las ciudades)
     """
+    addAirCity(catalog['airCity'], airport)
+
     #Crear vertices en los grafos   
     tempid = int(airport["id"]) #Conversion de str a int para comparar valores
     if (tempid > lastAirport) : #Si el registro tiene un id mas grande o no hay un id registrado
@@ -118,7 +139,13 @@ def loadAirPorts(catalog,airport, firstAirport, lastAirport, firstAirportInfo, l
     gr.insertVertex(catalog["routes"],float(airport["id"])) #Añade vertices a los grafos
     gr.insertVertex(catalog["connections"],float(airport["id"])) #Lo de arriba
     return firstAirport, lastAirport, firstAirportInfo, lastAirportInfo
-        
+
+def addAirCity(table, airport):
+    if mp.get(table,airport['City']) is None:
+        mp.put(table,airport['City'], lt.newList('ARRAY_LIST'))
+    map = onluMapValue(table, airport['City'])
+    lt.addLast(map, airport)
+
 def routes(catalog, route):
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
@@ -130,17 +157,24 @@ def routes(catalog, route):
 def calDis(first, sec):
     return haversine(first, sec)
 
-def addCity(catalog, city, firstCityInfo):
-
+def addCity(catalog, city, firstCityInfo, cont):
     if firstCityInfo == 0: #Si no es el primer registro del csv
         firstCityInfo = city 
     lastCityInfo = city
-    mp.put(catalog["cities"],int(city["id"]),city) #Añade los datos a un mapa, donde la llave sera el id en int y el valor seran los datos
+    if mp.get(catalog["cities"],(city["city"])) is None: #Añade los datos a un mapa, donde la llave sera el id en int y el valor seran los datos
+        lst = lt.newList('ARRAY_LIST')
+        mp.put(catalog["cities"],(city["city"]),lst)
+    lst2 = onluMapValue(catalog["cities"],city["city"])
+    lt.addLast(lst2, city)
+    
+    cont += 1
+        
+    
 
-    return (firstCityInfo, lastCityInfo)
+    return (firstCityInfo, lastCityInfo, cont)
 
-def first_to_show(catalog, airportDF, cityDF):
-    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(lt.size(gr.vertices(catalog["connections"])),gr.numEdges(catalog["connections"])),(str(mp.size(catalog["cities"])),cityDF))
+def first_to_show(catalog, airportDF, cityDF, cont):
+    return ((gr.numVertices(catalog["routes"]),gr.numEdges(catalog["routes"]),airportDF),(lt.size(gr.vertices(catalog["connections"])),gr.numEdges(catalog["connections"])),(str(cont),cityDF))
 
 # Funciones para creacion de datos
 

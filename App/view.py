@@ -98,9 +98,14 @@ while True:
             print("Los aeropuertos NO se encuentran en el mismo cluster.")
 
     elif int(inputs[0]) == 4:
-        ciudadOrigen = input("Ciudad de origen: ")
-        ciudadDestino = input("Ciudad de destino: ")
-        resultado = controller.findRoute(catalog, ciudadOrigen, ciudadDestino)
+        ciudadOrigen = 'St. Petersburg' #input("Ciudad de origen: ")
+        ciudadDestino = 'Lisbon' #input("Ciudad de destino: ")
+        part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
+        print(part1[0][0])
+        option1 = int(input('Seleccione la ciudad de salida: '))
+        print(part1[1][0])
+        option1 = int(input('Seleccione la ciudad de salida: '))
+        #resultado = controller.findRoute(catalog, ciudadOrigen, ciudadDestino)
         print("El aeropuerto de la ciudad origen (",ciudadOrigen,") es: ",resultado[0])
         print("El aeropuerto de la ciudad destino (",ciudadDestino,") es: ",resultado[1])
         print("Ruta: ",resultado[2])

@@ -61,6 +61,7 @@ def loadData(catalog):
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file: #Recorrer csv
+
         datos = model.loadAirPorts(catalog, airport, firstAirport, lastAirport, firstAirportInfo, lastAirportInfo)
         firstAirport = datos[0]
         lastAirport = datos[1]
@@ -80,13 +81,15 @@ def loadData(catalog):
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),
                                 delimiter=",")
     firstCity = 0
+    cont = 0
     for city in cities_input_file: #Recorrer csv
-        df2 = model.addCity(catalog, city, firstCity)
+        df2 = model.addCity(catalog, city, firstCity, cont)
+        cont = df2[2]
         firstCity = df2[0]
 
     cityDF = model.firstAndLastCitiesDF(df2[0],df2[1])
 
-    return model.first_to_show(catalog, firstDf, cityDF)
+    return model.first_to_show(catalog, firstDf, cityDF, cont)
 
 # Funciones de ordenamiento
 
@@ -100,3 +103,13 @@ def findCluster(catalog,IATA1,IATA2): #Req2
 
 def closedAirport(catalog,airportIATA):
     return model.closedAirport(catalog,airportIATA)
+
+def getAir(catalog, inicio, destino):
+    choTab = model.getCityInfo(catalog, inicio)
+    choTab2 = model.getCityInfo(catalog, destino)
+
+    return choTab, choTab2
+
+def findRoute(catalog, inicio, destino):
+
+    return
