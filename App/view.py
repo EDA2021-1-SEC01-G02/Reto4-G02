@@ -19,7 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
+import sys
+import config
+import threading
 import config as cf
 import sys
 import controller
@@ -50,118 +52,127 @@ catalog = None
 """
 Menu principal
 """
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-        print("Inicializando ....")
-        catalog = controller.newCatalog()
-        print("Cargando información de los archivos ....")
-        resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
-        print("\n=== Grafo 1 ===\n")
-        print("Aeropuertos: ",resultado[0][0])
-        print("Rutas aéreas: ",resultado[0][1])
-        print("Primer y ultimo aeropuerto cargado en el grafo: ")
-        print(resultado[0][2])
-        
-        print("\n=== Grafo 2 ===\n")
-        print("Aeropuertos: ",resultado[1][0])
-        print("Rutas aéreas: ",resultado[1][1])
-        print("Primer y ultimo aeropuerto cargado en el grafo: ")
-        print(resultado[0][2])
 
-        print("\n=== Red de ciudades ===\n")
-        print("Numero de ciudades: ",resultado[2][0])
-        print("Primera y ultima ciudad cargada en la estructura de datos: ")
-        print(resultado[2][1])
-        
+def thread_cycle():
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            print("Inicializando ....")
+            catalog = controller.newCatalog()
+            print("Cargando información de los archivos ....")
+            resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
+            print("\n=== Grafo 1 ===\n")
+            print("Aeropuertos: ",resultado[0][0])
+            print("Rutas aéreas: ",resultado[0][1])
+            print("Primer y ultimo aeropuerto cargado en el grafo: ")
+            print(resultado[0][2])
+            
+            print("\n=== Grafo 2 ===\n")
+            print("Aeropuertos: ",resultado[1][0])
+            print("Rutas aéreas: ",resultado[1][1])
+            print("Primer y ultimo aeropuerto cargado en el grafo: ")
+            print(resultado[0][2])
 
-    elif int(inputs[0]) == 2:
-        resultado = controller.findConnections(catalog)
-        print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
-        print("Aeropuertos dentro de la red: ", resultado[1] )
-        print("Top 5 aeropuertos interconectados: ")
-        print(resultado[2])
+            print("\n=== Red de ciudades ===\n")
+            print("Numero de ciudades: ",resultado[2][0])
+            print("Primera y ultima ciudad cargada en la estructura de datos: ")
+            print(resultado[2][1])
+            
+
+        elif int(inputs[0]) == 2:
+            resultado = controller.findConnections(catalog)
+            print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
+            print("Aeropuertos dentro de la red: ", resultado[1] )
+            print("Top 5 aeropuertos interconectados: ")
+            print(resultado[2])
 
 
-    #Req 2
-    elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
-        #codigo1 = input("Codigo IATA del aeropuerto 1: ")
-        #codigo2 = input("Codigo IATA del aeropuerto 2: ")
-        codigo1 = "LED"
-        codigo2 = "RTP"
-        resultado = controller.findCluster(catalog,codigo1,codigo2)
-        print("Numero de clusteres presentes en la red de transporte aereo: ",resultado[0])
-        if resultado[1]:
-            print("Los aeropuertos SI se encuentran en el mismo cluster.")
-        else:
-            print("Los aeropuertos NO se encuentran en el mismo cluster.")
-
-    elif int(inputs[0]) == 4:
-        ciudadOrigen = 'Rome' #input("Ciudad de origen: ")
-        ciudadDestino = 'Lichinga' #input("Ciudad de destino: ")
-        part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
-        print(part1[0][0])
-        option1 = int(input('\nSeleccione el aeropuerto de la ciudad de salida: '))
-        cityF = part1[0][1]
-        print(part1[1][0])
-        option2 = int(input('\nSeleccione el aeropuerto de la ciudad de llegada: '))
-        cityD = part1[1][1]
-        resultado = controller.findRoute(catalog,option1,option2, cityF, cityD)
-        if resultado is None:
-            print("No se puede llegar de %s a %s" %(ciudadOrigen, ciudadDestino))
-            continue
-        print('============ Resultados Req. 3 ============')
-        print("\n======= El aeropuerto de la ciudad origen ",ciudadOrigen," es: =======")
-        print('\n',resultado[1])
-        print("\n=======El aeropuerto de la ciudad destino ",ciudadDestino," es: =======")
-        print('\n', resultado[2])
-        print("\n==== Segun Dijsktra, la mejor ruta seria ==== ")
-        print("\nDistancia total de viaje es ",resultado[0][0], ' km')
-        print("\n=== Ruta del viaje es: ===")
-        print(resultado[0][1][0])
-        print("\n=== Paradas de la ruta ===")
-        print(resultado[0][1][1])
-        
-
-    #Req 4
-    elif int(inputs[0]) == 5:
-        ciudad = "Lisbon" #input("Ciudad origen: ")
-        millas = 1000 #int(input("Cantidad de millas disponibles: "))
-        resultado = controller.useMiles(catalog,ciudad,millas)
-        if resultado[0]:
-            print("Numero de aeropuertos conectados a la red de expansion minima: ",resultado[1])
-            print("Costo total al arbol de expansion minima: ",resultado[2])
-            print("Rama mas larga: ",resultado[3]) #Imprimir rama
-            if resultado[4] < 0:
-                print("Millas faltantes para realizar el recorrido:",resultado[4])
+        #Req 2
+        elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
+            #codigo1 = input("Codigo IATA del aeropuerto 1: ")
+            #codigo2 = input("Codigo IATA del aeropuerto 2: ")
+            codigo1 = "LED"
+            codigo2 = "RTP"
+            resultado = controller.findCluster(catalog,codigo1,codigo2)
+            print("Numero de clusteres presentes en la red de transporte aereo: ",resultado[0])
+            if resultado[1]:
+                print("Los aeropuertos SI se encuentran en el mismo cluster.")
             else:
-                print("Millas excedentes para realizar el recorrido:",resultado[4])
+                print("Los aeropuertos NO se encuentran en el mismo cluster.")
+
+        elif int(inputs[0]) == 4:
+            ciudadOrigen = 'Rome' #input("Ciudad de origen: ")
+            ciudadDestino = 'Lichinga' #input("Ciudad de destino: ")
+            part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
+            print(part1[0][0])
+            option1 = int(input('\nSeleccione el aeropuerto de la ciudad de salida: '))
+            cityF = part1[0][1]
+            print(part1[1][0])
+            option2 = int(input('\nSeleccione el aeropuerto de la ciudad de llegada: '))
+            cityD = part1[1][1]
+            resultado = controller.findRoute(catalog,option1,option2, cityF, cityD)
+            if resultado is None:
+                print("No se puede llegar de %s a %s" %(ciudadOrigen, ciudadDestino))
+                continue
+            print('============ Resultados Req. 3 ============')
+            print("\n======= El aeropuerto de la ciudad origen ",ciudadOrigen," es: =======")
+            print('\n',resultado[1])
+            print("\n=======El aeropuerto de la ciudad destino ",ciudadDestino," es: =======")
+            print('\n', resultado[2])
+            print("\n==== Segun Dijsktra, la mejor ruta seria ==== ")
+            print("\nDistancia total de viaje es ",resultado[0][0], ' km')
+            print("\n=== Ruta del viaje es: ===")
+            print(resultado[0][1][0])
+            print("\n=== Paradas de la ruta ===")
+            print(resultado[0][1][1])
+            
+
+        #Req 4
+        elif int(inputs[0]) == 5:
+            ciudad = "Lisbon" #input("Ciudad origen: ")
+            millas = 1000 #int(input("Cantidad de millas disponibles: "))
+            resultado = controller.useMiles(catalog,ciudad,millas)
+            if resultado[0]:
+                print("Numero de aeropuertos conectados a la red de expansion minima: ",resultado[1])
+                print("Costo total al arbol de expansion minima: ",resultado[2])
+                print("Rama mas larga: ",resultado[3]) #Imprimir rama
+                if resultado[4] < 0:
+                    print("Millas faltantes para realizar el recorrido:",resultado[4])
+                else:
+                    print("Millas excedentes para realizar el recorrido:",resultado[4])
+            else:
+                print("No hay manera de salir y llegar a",ciudad)
+
+        #Req5
+        elif int(inputs[0]) == 6:
+            #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
+            aeropuerto = "DXB"
+            resultado = controller.closedAirport(catalog,aeropuerto)
+            print("--- Datos originales ---")
+            print("El grafo dirigido cuenta con",resultado[0][0],"aeropuertos y",resultado[0][1],"rutas.")
+            print("El grafo no dirigido cuenta con",resultado[1][0],"aeropuertos y",resultado[1][1],"rutas.")
+
+            print("--- Nuevos datos ---")
+            print("El grafo dirigido contaria con",resultado[2][0],"aeropuertos y",resultado[2][1],"rutas restantes.")
+            print("El grafo no dirigido contaria con",resultado[3][0],"aeropuertos y",resultado[3][1],"rutas restantes.")
+            print("\nHay",resultado[4][0],"aeropuertos afectados por el cierre de",aeropuerto)
+            print("Los tres primeros y tres ultimoa esropuertos afectados son: ")
+            print(resultado[4][1])
+
+        #elif int(inputs[0]) == 7:
+        #    pass
+
+        #elif int(inputs[0]) == 8:
+        #    pass
+
         else:
-            print("No hay manera de salir y llegar a",ciudad)
+            sys.exit(0)
 
-    #Req5
-    elif int(inputs[0]) == 6:
-        #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
-        aeropuerto = "DXB"
-        resultado = controller.closedAirport(catalog,aeropuerto)
-        print("--- Datos originales ---")
-        print("El grafo dirigido cuenta con",resultado[0][0],"aeropuertos y",resultado[0][1],"rutas.")
-        print("El grafo no dirigido cuenta con",resultado[1][0],"aeropuertos y",resultado[1][1],"rutas.")
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=thread_cycle)
+    thread.start()
 
-        print("--- Nuevos datos ---")
-        print("El grafo dirigido contaria con",resultado[2][0],"aeropuertos y",resultado[2][1],"rutas restantes.")
-        print("El grafo no dirigido contaria con",resultado[3][0],"aeropuertos y",resultado[3][1],"rutas restantes.")
-        print("\nHay",resultado[4][0],"aeropuertos afectados por el cierre de",aeropuerto)
-        print("Los tres primeros y tres ultimoa esropuertos afectados son: ")
-        print(resultado[4][1])
 
-    #elif int(inputs[0]) == 7:
-    #    pass
-
-    #elif int(inputs[0]) == 8:
-    #    pass
-
-    else:
-        sys.exit(0)
-sys.exit(0)
