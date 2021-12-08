@@ -26,7 +26,7 @@
 
 
 import config as cf
-from DISClib.ADT.graph import gr, numVertices, outdegree
+from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
@@ -35,7 +35,7 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
-#from haversine import haversine, Unit
+from haversine import haversine, Unit
 import math as math
 import pandas as pd
 import csv
@@ -76,7 +76,7 @@ def newCatalog():
     
     catalog["routes"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo denso con todos los aeropuertos y todas las rutas
                                               directed=True,
-                                              size=100000, #TODO: Cambiar a 100000 para la version final
+                                              size=100000,
                                               comparefunction=compareairportiata)
 
     catalog["connections"] = gr.newGraph(datastructure='ADJ_LIST', #Grafo que se encargara de tener un arco para verificar que ciertos aeropuertos sean paralelos
@@ -166,11 +166,8 @@ def addCity(catalog, city, firstCityInfo, cont):
         mp.put(catalog["cities"],(city["city"]),lst)
     lst2 = onluMapValue(catalog["cities"],city["city"])
     lt.addLast(lst2, city)
-    
     cont += 1
-        
     
-
     return (firstCityInfo, lastCityInfo, cont)
 
 def first_to_show(catalog, airportDF, cityDF, cont):
@@ -202,7 +199,6 @@ def closedAirportDF(catalog,airports):
         else:
             temp = lt.getElement(airports,city)
             tempdata = mp.get(catalog["airports"],temp)
-            print(tempdata)
             data = tempdata["value"]
             cities[city] = data["IATA"],data["Name"],data["City"],data["Country"]
         
@@ -276,6 +272,24 @@ def findCluster(catalog,IATA1,IATA2):
     connectedScc = scc.stronglyConnected(airportsScc,airport1,airport2) #Revisar si ambos aeropuertos estan en el mismo cluster
 
     return (numScc,connectedScc)
+
+#Req4
+def useMiles(catalog,city,miles):
+    airports = mp.get(catalog["airCity"],city)
+    source = lt.getElement(airports["value"],1)
+    temp = djk.Dijkstra(catalog["routes"],int(source["id"]))
+    for i in range(1,lt.size(airports["value"])+1):
+        tempsource = lt.getElement(airports["value"],i)
+        canReturn = djk.hasPathTo(temp,int(tempsource["id"]))
+        if canReturn:
+            numNodes = 0
+            kilometers = miles*1.60
+            cost = djk.distTo(temp,int(tempsource["id"]))
+            finalMiles = (kilometers-cost)/1.60
+            break
+    if canReturn:
+        cost = djk.distTo(temp,int(tempsource["id"]))
+    return (canReturn,numNodes,cost,0,finalMiles)
 
 #Req 5
 def closedAirport(catalog,airportIATA):

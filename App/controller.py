@@ -101,7 +101,10 @@ def findConnections(catalog): #Req1
 def findCluster(catalog,IATA1,IATA2): #Req2
     return model.findCluster(catalog,IATA1,IATA2)
 
-def closedAirport(catalog,airportIATA):
+def useMiles(catalog,city,miles): #Req 4
+    return model.useMiles(catalog,city,miles)
+
+def closedAirport(catalog,airportIATA): #Req5
     return model.closedAirport(catalog,airportIATA)
 
 def getAir(catalog, inicio, destino):

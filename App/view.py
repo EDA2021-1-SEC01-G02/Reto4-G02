@@ -111,15 +111,21 @@ while True:
         print("Ruta: ",resultado[2])
         print("Distancia total de viaje: ",resultado[3])
 
-
+    #Req 4
     elif int(inputs[0]) == 5:
-        ciudad = input("Ciudad origen: ")
-        millas = input("Cantidad de millas disponibles: ")
+        ciudad = "Lisbon" #input("Ciudad origen: ")
+        millas = 1000 #int(input("Cantidad de millas disponibles: "))
         resultado = controller.useMiles(catalog,ciudad,millas)
-        print("Numero de nodos conectados a la red de expansion minima: ",resultado[0])
-        print("Costo total de la red de expansion minima: ",resultado[1])
-        print("Rama mas larga: ",resultado[2]) #Imprimir rama
-        print("Lista de ciudades recomendadas: ",resultado[3])
+        if resultado[0]:
+            print("Numero de aeropuertos conectados a la red de expansion minima: ",resultado[1])
+            print("Costo total al arbol de expansion minima: ",resultado[2])
+            print("Rama mas larga: ",resultado[3]) #Imprimir rama
+            if resultado[4] < 0:
+                print("Millas faltantes para realizar el recorrido:",resultado[4])
+            else:
+                print("Millas excedentes para realizar el recorrido:",resultado[4])
+        else:
+            print("No hay manera de salir y llegar a",ciudad)
 
     #Req5
     elif int(inputs[0]) == 6:
