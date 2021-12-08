@@ -135,18 +135,21 @@ def thread_cycle():
         #Req 4
         elif int(inputs[0]) == 5:
             ciudad = "Lisbon" #input("Ciudad origen: ")
-            millas = 1000 #int(input("Cantidad de millas disponibles: "))
-            resultado = controller.useMiles(catalog,ciudad,millas)
-            if resultado[0]:
-                print("Numero de aeropuertos conectados a la red de expansion minima: ",resultado[1])
-                print("Costo total al arbol de expansion minima: ",resultado[2])
-                print("Rama mas larga: ",resultado[3]) #Imprimir rama
-                if resultado[4] < 0:
-                    print("Millas faltantes para realizar el recorrido:",resultado[4])
-                else:
-                    print("Millas excedentes para realizar el recorrido:",resultado[4])
-            else:
-                print("No hay manera de salir y llegar a",ciudad)
+            parte1=controller.getAir(catalog,ciudad,ciudad)
+            print(parte1[0][0])
+            seleccion = int(input("Seleccione el aeropuerto: "))
+            origen = parte1[0][1]
+            millas = 19850.00 #float(input("Cantidad de millas disponibles: "))
+            resultado = controller.useMiles(catalog,millas,seleccion,origen)
+            print("+++ Aeropuerto de salida para el codigo IATA:",resultado[0],"+++")
+            print(resultado[1])
+            print("\nNumero de aeropuertos posibles:",resultado[2])
+            print("Distancia de viaje entre aeropuertos: ",resultado[3])
+            print("Millas de pasajero disponibles en kilometros:",resultado[4])
+            print("\n+++ Ruta mas larga posible con el aeropuerto",resultado[0],"+++")
+            print("Distancia de la ruta mas larga posible: ",resultado[4])
+            print("Detalles de la ruta mas larga: ")
+            print(resultado[5]) #Imprimir rama
 
         #Req5
         elif int(inputs[0]) == 6:

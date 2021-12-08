@@ -101,8 +101,10 @@ def findConnections(catalog): #Req1
 def findCluster(catalog,IATA1,IATA2): #Req2
     return model.findCluster(catalog,IATA1,IATA2)
 
-def useMiles(catalog,city,miles): #Req 4
-    return model.useMiles(catalog,city,miles)
+def useMiles(catalog,miles,indice1,inicio): #Req 4
+    dep = model.lt.getElement(inicio,indice1)
+    depAir = model.getAirports(catalog["airCity"],dep["city"])
+    return model.useMiles(catalog,miles,depAir)
 
 def closedAirport(catalog,airportIATA): #Req5
     return model.closedAirport(catalog,airportIATA)
@@ -120,6 +122,9 @@ def findRoute( catalog, indice1, indice2, inicio, destino ):
     corDep = float(dep['lat']), float(dep['lng'])
     corDes = float(des['lat']), float(des['lng'])
     depAirport = model.getNear(catalog, corDep)
+    depAir = model.getAirports(catalog['airCity'], dep['city'])
+    depAirport = model.getNear(depAir, corDep)
+    print(depAirport)
     depid = depAirport['id']
     desAirport = model.getNear(catalog, corDes)
     desid = desAirport['id']

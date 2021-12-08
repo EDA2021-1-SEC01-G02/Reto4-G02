@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.Algorithms.Graphs.prim import prim
 import config as cf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
@@ -36,6 +37,7 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim as pr
 from haversine import haversine, Unit
 import math as math
 import pandas as pd
@@ -294,6 +296,9 @@ def closedAirportDF(catalog,airports):
     
     return (size,pd.DataFrame.from_dict(cities, orient="index", columns=["IATA","Nombre","Ciudad","Pais"]))
 
+def milesDF():
+    return
+
 
 # Funciones de consulta
 
@@ -341,6 +346,7 @@ def getIDbyIATA(catalog,IATA):
     Recibe un IATA de un aeropuerto y retorna el ID del aeropuerto
     """
     return int(onluMapValue(catalog["airportsID"],IATA))
+
 def onluMapValue(map, key):
     pair = mp.get(map, key)
     return me.getValue(pair)
@@ -357,22 +363,21 @@ def findCluster(catalog,IATA1,IATA2):
     return (numScc,connectedScc)
 
 #Req4
-def useMiles(catalog,city,miles):
-    airports = mp.get(catalog["airCity"],city)
-    source = lt.getElement(airports["value"],1)
-    temp = djk.Dijkstra(catalog["routes"],int(source["id"]))
-    for i in range(1,lt.size(airports["value"])+1):
-        tempsource = lt.getElement(airports["value"],i)
-        canReturn = djk.hasPathTo(temp,int(tempsource["id"]))
-        if canReturn:
-            numNodes = 0
-            kilometers = miles*1.60
-            cost = djk.distTo(temp,int(tempsource["id"]))
-            finalMiles = (kilometers-cost)/1.60
-            break
-    if canReturn:
-        cost = djk.distTo(temp,int(tempsource["id"]))
-    return (canReturn,numNodes,cost,0,finalMiles)
+def useMiles(catalog,miles,airports):
+    airport = lt.getElement(airports,1) #Obtiene los datos del aeropuerto seleccionado
+    airportid = int(airport["id"]) #Obtiene el id del aeropuerto
+    airportDF = onlyOneDF(airport) #Crea el DataFrame que se le mostrara al usuario sobre los datos del aeropuerto
+    kilometers = miles*1.60 #Conversion de millas a kilometros
+    mst = pr.PrimMST(catalog["routes"]) #Algoritmo de Prim
+    prim = pr.prim(catalog["routes"],mst,airportid)
+    airportsNum =
+    airportsSum = 
+    longestPathDistance =
+    longestPathDF = milesDF()
+
+    return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
+
+    
 
 #Req 5
 def closedAirport(catalog,airportIATA):
@@ -383,17 +388,14 @@ def closedAirport(catalog,airportIATA):
     numAirportsGraph = gr.numVertices(catalog["connections"])
     numRoutesGraph = gr.numEdges(catalog["connections"])
 
-    finalNumAirportsDigraph = numAirportsDigraph - 1
-    finalNumRoutesDigraph = numRoutesDigraph - (gr.indegree(catalog["routes"],airportId)+gr.outdegree(catalog["routes"],airportId))
-    finalNumAirportsGraph = numAirportsGraph - 1
-    finalNumRoutesGraph = numRoutesGraph - gr.degree(catalog["connections"],airportId)
+    finalNumAirportsDigraph = numAirportsDigraph - 1 #Resta el aeropuerto al grafo dirigido
+    finalNumRoutesDigraph = numRoutesDigraph - (gr.indegree(catalog["routes"],airportId)+gr.outdegree(catalog["routes"],airportId)) #Calcula las rutas restantes en el grafo dirigido
+    finalNumAirportsGraph = numAirportsGraph - 1 #Resta el aeropuerto al grafo no dirigido
+    finalNumRoutesGraph = numRoutesGraph - gr.degree(catalog["connections"],airportId) #Calcula las rutas restantes en el grafo no dirigido
 
-    airportsDF = closedAirportDF(catalog,gr.adjacents(catalog["connections"],airportId))
+    airportsDF = closedAirportDF(catalog,gr.adjacents(catalog["connections"],airportId)) #Creacion del DataFrame
 
     return ((numAirportsDigraph,numRoutesDigraph),(numAirportsGraph,numRoutesGraph),(finalNumAirportsDigraph,finalNumRoutesDigraph),(finalNumAirportsGraph,finalNumRoutesGraph),(airportsDF))
-
-
-
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
