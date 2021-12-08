@@ -57,7 +57,7 @@ def loadData(catalog):
     firstAirportInfo= 'Ho.a'
     lastAirportInfo = 'Ho.a'
 
-    airports_file = cf.data_dir + 'airports-utf8-large.csv' #TODO: Reemplazar para la version final del codigo
+    airports_file = cf.data_dir + 'airports-utf8-small.csv' #TODO: Reemplazar para la version final del codigo
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file: #Recorrer csv
@@ -70,7 +70,7 @@ def loadData(catalog):
 
     firstDf = model.firstAndLastAirportsDF(firstAirportInfo, lastAirportInfo)
 
-    routes_file = cf.data_dir + 'routes-utf8-large.csv' #TODO: Reemplazar para la verion final del codigo
+    routes_file = cf.data_dir + 'routes-utf8-small.csv' #TODO: Reemplazar para la verion final del codigo
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file: #Recorrec csv
@@ -119,15 +119,13 @@ def findRoute( catalog, indice1, indice2, inicio, destino ):
     des = model.lt.getElement(destino, indice2)
     corDep = float(dep['lat']), float(dep['lng'])
     corDes = float(des['lat']), float(des['lng'])
-    depAir = model.getAirports(catalog['airCity'], dep['city'])
-    desAir = model.getAirports(catalog['airCity'], des['city'])
-    depAirport = model.getNear(depAir, corDep)
+    depAirport = model.getNear(catalog, corDep)
     depid = depAirport['id']
-    desAirport = model.getNear(desAir, corDes)
+    desAirport = model.getNear(catalog, corDes)
     desid = desAirport['id']
     depDF = model.onlyOneDF(depAirport)
     desDF = model.onlyOneDF(desAirport)
     result = (model.dijk(catalog, depid, desid))
     if result is not None:
         return result, depDF, desDF
-    return None
+    return None, depDF, desDF

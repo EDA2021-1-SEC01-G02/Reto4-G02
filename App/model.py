@@ -151,7 +151,8 @@ def cmpIATA(item1, item2):
 def routesDF(dict):
     return pd.DataFrame.from_dict(dict, orient='index')
     
-def getNear(lst, cityCor):
+def getNear(catalog, cityCor):
+    lst = mp.valueSet(catalog['airports'])
     size = lt.size(lst)+1
     min = 100000000000*1000000000
     airport = 0

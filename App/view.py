@@ -102,8 +102,8 @@ def thread_cycle():
                 print("Los aeropuertos NO se encuentran en el mismo cluster.")
 
         elif int(inputs[0]) == 4:
-            ciudadOrigen = 'Rome' #input("Ciudad de origen: ")
-            ciudadDestino = 'Lichinga' #input("Ciudad de destino: ")
+            ciudadOrigen = 'Lisbon' #input("Ciudad de origen: ")
+            ciudadDestino = 'Saint Petersburg' #input("Ciudad de destino: ")
             part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
             print(part1[0][0])
             option1 = int(input('\nSeleccione el aeropuerto de la ciudad de salida: '))
@@ -112,7 +112,11 @@ def thread_cycle():
             option2 = int(input('\nSeleccione el aeropuerto de la ciudad de llegada: '))
             cityD = part1[1][1]
             resultado = controller.findRoute(catalog,option1,option2, cityF, cityD)
-            if resultado is None:
+            if resultado[0] is None:
+                print('El aeropuerto de partida es: ')
+                print(resultado[1])
+                print('El aeropuerto de llegada es: ')
+                print(resultado[2])
                 print("No se puede llegar de %s a %s" %(ciudadOrigen, ciudadDestino))
                 continue
             print('============ Resultados Req. 3 ============')
