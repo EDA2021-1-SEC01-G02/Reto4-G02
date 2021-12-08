@@ -30,6 +30,7 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
+from DISClib.ADT import stack as tk
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as ms
@@ -91,10 +92,81 @@ def newCatalog():
     catalog["airports"] = mp.newMap(maptype="PROBING")
 
     catalog['airCity'] =  mp.newMap(maptype="PROBING")
+    catalog['allRoutes'] = mp.newMap(maptype="PROBING")
 
     return catalog
 
 # Funciones para agregar informacion al catalogo
+
+def getAirports(map, city):
+    lst = onluMapValue(map, city)
+    return lst
+
+def dijk(catalog,id1,id2):
+    search = djk.Dijkstra(catalog['routes'], int(id1))
+    if not djk.hasPathTo(search, int(id2)):
+        return 
+    distance = (djk.distTo(search, int(id2)))
+    path =  djk.pathTo(search, int(id2))
+    
+    return distance, lstFromSt(catalog, path)
+
+def lstFromSt(catalog,stack):
+    dict = {}
+    newList = lt.newList('ARRAT_LIST', cmpfunction=cmpIATA)
+    for it in range(1, tk.size(stack)+1):
+        first = tk.pop(stack)
+        dep = (onluMapValue(catalog['airports'], (first['vertexA'])))
+        depIATA = (onluMapValue(catalog['airports'], (first['vertexA'])))['IATA']
+        des = (onluMapValue(catalog['airports'], (first['vertexB'])))
+        desIATA = (onluMapValue(catalog['airports'], (first['vertexB'])))['IATA']
+        lst = onluMapValue(catalog['allRoutes'], depIATA)
+        for pos in range(1, lt.size(lst)+1):
+            temp= lt.getElement(lst, pos)
+            if temp['Departure'] == depIATA and temp['Destination'] == desIATA:
+                final = temp
+                break
+        if lt.size(newList) == 0:
+            lt.addLast(newList, dep)
+        elif dep != lt.getElement(newList, lt.size(newList)):
+            lt.addLast(newList, dep)
+        if des != lt.getElement(newList, lt.size(newList)):
+            lt.addLast(newList, des)
+        dict[it]= final
+    return routesDF(dict), thTable(newList, lt.size(newList)+1)
+
+def thTable(lst, len):
+    dict = {}
+    for pos in range(1, len):
+        temp = lt.getElement(lst, pos)
+        dict[pos] = temp
+    return pd.DataFrame.from_dict(dict, orient = 'index')[['IATA', 'Name', 'City', 'Country']]
+
+def cmpIATA(item1, item2):
+    if item1['IATA'] > item2['IATA']:
+        return  True
+    else: 
+        return False
+
+def routesDF(dict):
+    return pd.DataFrame.from_dict(dict, orient='index')
+    
+def getNear(lst, cityCor):
+    size = lt.size(lst)+1
+    min = 100000000000*1000000000
+    airport = 0
+    for pos in range(1, size):
+        temp = lt.getElement(lst, pos)
+        corTemp = float(temp['Latitude']), float(temp['Longitude'])
+        tempDis =calDis(cityCor, corTemp)
+        if tempDis < min:
+            min =  tempDis
+            airport = temp
+
+    return airport
+def onlyOneDF(item):
+    dict = {1: item}
+    return pd.DataFrame.from_dict(dict, orient='index')[['IATA', 'Name', 'City', 'Country']]
 
 def getCityCor(catalog, city):
     temp = mp.get(catalog['cities'], city)
@@ -146,13 +218,23 @@ def addAirCity(table, airport):
     map = onluMapValue(table, airport['City'])
     lt.addLast(map, airport)
 
+
+
 def routes(catalog, route):
+    addRoutesByDep(catalog['allRoutes'] , route)
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
     gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
     edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
     if edge is None:
         gr.addEdge(catalog["connections"],vertexDep,vertexDes,0) #Añade arco al grafo no dirigido
+
+def addRoutesByDep(catalog, route):
+    if not mp.contains(catalog, route['Departure']):
+        mp.put(catalog, route['Departure'],lt.newList('ARRAY_LIST'))
+    item = onluMapValue(catalog, route['Departure'])
+    lt.addLast(item, route)
+
 
 def calDis(first, sec):
     return haversine(first, sec)

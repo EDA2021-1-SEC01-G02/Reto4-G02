@@ -98,18 +98,31 @@ while True:
             print("Los aeropuertos NO se encuentran en el mismo cluster.")
 
     elif int(inputs[0]) == 4:
-        ciudadOrigen = 'St. Petersburg' #input("Ciudad de origen: ")
-        ciudadDestino = 'Lisbon' #input("Ciudad de destino: ")
+        ciudadOrigen = 'Rome' #input("Ciudad de origen: ")
+        ciudadDestino = 'Lichinga' #input("Ciudad de destino: ")
         part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
         print(part1[0][0])
-        option1 = int(input('Seleccione la ciudad de salida: '))
+        option1 = int(input('\nSeleccione el aeropuerto de la ciudad de salida: '))
+        cityF = part1[0][1]
         print(part1[1][0])
-        option1 = int(input('Seleccione la ciudad de salida: '))
-        #resultado = controller.findRoute(catalog, ciudadOrigen, ciudadDestino)
-        print("El aeropuerto de la ciudad origen (",ciudadOrigen,") es: ",resultado[0])
-        print("El aeropuerto de la ciudad destino (",ciudadDestino,") es: ",resultado[1])
-        print("Ruta: ",resultado[2])
-        print("Distancia total de viaje: ",resultado[3])
+        option2 = int(input('\nSeleccione el aeropuerto de la ciudad de llegada: '))
+        cityD = part1[1][1]
+        resultado = controller.findRoute(catalog,option1,option2, cityF, cityD)
+        if resultado is None:
+            print("No se puede llegar de %s a %s" %(ciudadOrigen, ciudadDestino))
+            continue
+        print('============ Resultados Req. 3 ============')
+        print("\n======= El aeropuerto de la ciudad origen ",ciudadOrigen," es: =======")
+        print('\n',resultado[1])
+        print("\n=======El aeropuerto de la ciudad destino ",ciudadDestino," es: =======")
+        print('\n', resultado[2])
+        print("\n==== Segun Dijsktra, la mejor ruta seria ==== ")
+        print("\nDistancia total de viaje es ",resultado[0][0], ' km')
+        print("\n=== Ruta del viaje es: ===")
+        print(resultado[0][1][0])
+        print("\n=== Paradas de la ruta ===")
+        print(resultado[0][1][1])
+        
 
     #Req 4
     elif int(inputs[0]) == 5:
