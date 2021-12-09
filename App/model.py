@@ -25,7 +25,7 @@
  """
 
 
-from DISClib.Algorithms.Graphs.prim import prim
+from DISClib.Algorithms.Graphs.prim import prim, weightMST
 import config as cf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
@@ -227,10 +227,15 @@ def routes(catalog, route):
     addRoutesByDep(catalog['allRoutes'] , route)
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
-    gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
+    weight = float(route["distance_km"])
+    gr.addEdge(catalog["routes"],vertexDep,vertexDes,weight) #Añadir arco al grafo dirigido
     edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
+    print(edge)
     if edge is None:
-        gr.addEdge(catalog["connections"],vertexDep,vertexDes,0) #Añade arco al grafo no dirigido
+        gr.addEdge(catalog["connections"],vertexDep,vertexDes,weight) #Añade arco al grafo no dirigido
+    else:
+        if weight < edge["weight"]:
+            edge["weight"] = weight    
 
 def addRoutesByDep(catalog, route):
     if not mp.contains(catalog, route['Departure']):
@@ -368,11 +373,13 @@ def useMiles(catalog,miles,airports):
     airportid = int(airport["id"]) #Obtiene el id del aeropuerto
     airportDF = onlyOneDF(airport) #Crea el DataFrame que se le mostrara al usuario sobre los datos del aeropuerto
     kilometers = miles*1.60 #Conversion de millas a kilometros
-    mst = pr.PrimMST(catalog["routes"]) #Algoritmo de Prim
-    prim = pr.prim(catalog["routes"],mst,airportid)
-    airportsNum =
-    airportsSum = 
-    longestPathDistance =
+    mst = pr.PrimMST(catalog["connections"]) #Algoritmo de Prim
+    prim = pr.prim(catalog["connections"],mst,airportid)
+    scan = pr.scan(catalog["connections"],prim,airportid)
+    print(scan)
+    airportsNum = pr.edgesMST(catalog["connections"],scan)
+    airportsSum = None
+    longestPathDistance = None
     longestPathDF = milesDF()
 
     return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)

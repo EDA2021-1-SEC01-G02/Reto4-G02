@@ -147,9 +147,9 @@ def thread_cycle():
             print("Distancia de viaje entre aeropuertos: ",resultado[3])
             print("Millas de pasajero disponibles en kilometros:",resultado[4])
             print("\n+++ Ruta mas larga posible con el aeropuerto",resultado[0],"+++")
-            print("Distancia de la ruta mas larga posible: ",resultado[4])
+            print("Distancia de la ruta mas larga posible: ",resultado[5])
             print("Detalles de la ruta mas larga: ")
-            print(resultado[5]) #Imprimir rama
+            print(resultado[6]) #Imprimir rama
 
         #Req5
         elif int(inputs[0]) == 6:
