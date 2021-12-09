@@ -56,6 +56,9 @@ def loadData(catalog):
     lastAirport = 0
     firstAirportInfo= 'Ho.a'
     lastAirportInfo = 'Ho.a'
+    countNodes = 0
+    countEdgesDigraph = 0
+    countEdgesGraph = 0
 
     airports_file = cf.data_dir + 'airports-utf8-small.csv' #TODO: Reemplazar para la version final del codigo
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
@@ -67,6 +70,7 @@ def loadData(catalog):
         lastAirport = datos[1]
         firstAirportInfo= datos[2]
         lastAirportInfo = datos[3]
+        countNodes+=1
 
     firstDf = model.firstAndLastAirportsDF(firstAirportInfo, lastAirportInfo)
 
@@ -74,7 +78,12 @@ def loadData(catalog):
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file: #Recorrec csv
-        model.routes(catalog, route)
+        toCount = model.routes(catalog, route)
+        if toCount[0]:
+            countEdgesDigraph += 1
+        if toCount[1]:
+            countEdgesGraph += 1
+
     
 
     cities_file = cf.data_dir + 'worldcities-utf8.csv' #No cambiar lol
@@ -89,7 +98,7 @@ def loadData(catalog):
 
     cityDF = model.firstAndLastCitiesDF(df2[0],df2[1])
 
-    return model.first_to_show(catalog, firstDf, cityDF, cont)
+    return ((model.first_to_show(catalog, firstDf, cityDF, cont)),(countNodes,countEdgesDigraph,countEdgesGraph))
 
 # Funciones de ordenamiento
 
@@ -102,8 +111,8 @@ def findCluster(catalog,IATA1,IATA2): #Req2
     return model.findCluster(catalog,IATA1,IATA2)
 
 def useMiles(catalog,miles,indice1,inicio): #Req 4
-    dep = model.lt.getElement(inicio,indice1)
-    depAir = model.getAirports(catalog["airCity"],dep["city"])
+    dep = model.lt.getElement(inicio,indice1) #Obtiene los datos de la ciudad seleccionada por el usuario de entre la lista
+    depAir = model.getAirports(catalog["airCity"],dep["city"]) #Obtiene los aeropuertos de la ciudad
     return model.useMiles(catalog,miles,depAir)
 
 def closedAirport(catalog,airportIATA): #Req5

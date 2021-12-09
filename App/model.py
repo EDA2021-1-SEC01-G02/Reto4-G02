@@ -227,10 +227,21 @@ def routes(catalog, route):
     addRoutesByDep(catalog['allRoutes'] , route)
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
-    gr.addEdge(catalog["routes"],vertexDep,vertexDes,float(route["distance_km"])) #Añadir arco al grafo dirigido
+    edgeDigraph = False
+    edgeGraph = False
+    weight = float(route["distance_km"])
+    edgeDi = gr.getEdge(catalog['routes'], vertexDep, vertexDes) 
+    if edgeDi is None:
+        edgeDigraph = True
+    gr.addEdge(catalog["routes"],vertexDep,vertexDes,weight) #Añadir arco al grafo dirigido
     edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
     if edge is None:
-        gr.addEdge(catalog["connections"],vertexDep,vertexDes,0) #Añade arco al grafo no dirigido
+        gr.addEdge(catalog["connections"],vertexDep,vertexDes,weight) #Añade arco al grafo no dirigido
+        edgeGraph = True
+    else:
+        if weight < edge["weight"]:
+            edge["weight"] = weight   
+    return (edgeDigraph,edgeGraph)
 
 def addRoutesByDep(catalog, route):
     if not mp.contains(catalog, route['Departure']):
@@ -364,18 +375,18 @@ def findCluster(catalog,IATA1,IATA2):
 
 #Req4
 def useMiles(catalog,miles,airports):
-    airport = lt.getElement(airports,1) #Obtiene los datos del aeropuerto seleccionado
+    airport = lt.getElement(airports,1) #Obtiene los datos del aeropuerto seleccionado de entre la lista
     airportid = int(airport["id"]) #Obtiene el id del aeropuerto
     airportDF = onlyOneDF(airport) #Crea el DataFrame que se le mostrara al usuario sobre los datos del aeropuerto
     kilometers = miles*1.60 #Conversion de millas a kilometros
-    mst = pr.PrimMST(catalog["routes"]) #Algoritmo de Prim
-    prim = pr.prim(catalog["routes"],mst,airportid)
-    #airportsNum =
-    #airportsSum = 
-    #longestPathDistance =
-    longestPathDF = milesDF()
+    mst = pr.PrimMST(catalog["connections"]) #Algoritmo de Prim aplicado al grafo no dirigido
+    
+    airportsNum = pr.edgesMST(catalog["connections"],mst) #Pila con el camino entre source y aeropuerto. Posiblemente para usar en longestPathDF
+    airportsSum = pr.weightMST(catalog["connections"],mst) #Teoricamente muestra el peso total del grafo
+    longestPathDistance = pr.scan(catalog["connections"],mst,airportid) #Teoricamente muestra el peso para llegar de source a la ciudad. Es infinito si es que no hay camino (Retorna toda la ruta)
+    longestPathDF = milesDF() #Crea el dataframe que le mostrara al usuario los aeropuertos en el camino
 
-    #return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
+    return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
 
     
 
