@@ -104,7 +104,7 @@ def thread_cycle():
                 print("Los aeropuertos NO se encuentran en el mismo cluster.")
 
         elif int(inputs[0]) == 4:
-            ciudadOrigen = 'Lisbon' #input("Ciudad de origen: ")
+            ciudadOrigen = 'La Paz' #input("Ciudad de origen: ")
             ciudadDestino = 'Saint Petersburg' #input("Ciudad de destino: ")
             part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
             print(part1[0][0])

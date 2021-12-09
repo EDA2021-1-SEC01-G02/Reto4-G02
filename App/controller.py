@@ -131,9 +131,6 @@ def findRoute( catalog, indice1, indice2, inicio, destino ):
     corDep = float(dep['lat']), float(dep['lng'])
     corDes = float(des['lat']), float(des['lng'])
     depAirport = model.getNear(catalog, corDep)
-    depAir = model.getAirports(catalog['airCity'], dep['city'])
-    depAirport = model.getNear(depAir, corDep)
-    print(depAirport)
     depid = depAirport['id']
     desAirport = model.getNear(catalog, corDes)
     desid = desAirport['id']

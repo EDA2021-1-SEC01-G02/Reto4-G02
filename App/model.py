@@ -25,7 +25,7 @@
  """
 
 
-from DISClib.Algorithms.Graphs.prim import prim, weightMST
+from DISClib.Algorithms.Graphs.prim import prim
 import config as cf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
@@ -387,7 +387,7 @@ def useMiles(catalog,miles,airports):
     longestPathDistance = None
     longestPathDF = milesDF()
 
-    return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
+    #return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
 
     
 
