@@ -60,7 +60,7 @@ def loadData(catalog):
     countEdgesDigraph = 0
     countEdgesGraph = 0
 
-    airports_file = cf.data_dir + 'airports-utf8-small.csv' #TODO: Reemplazar para la version final del codigo
+    airports_file = cf.data_dir + 'airports-utf8-large.csv'
     airports_input_file = csv.DictReader(open(airports_file, encoding="utf-8"),
                                 delimiter=",")
     for airport in airports_input_file: #Recorrer csv
@@ -74,7 +74,7 @@ def loadData(catalog):
 
     firstDf = model.firstAndLastAirportsDF(firstAirportInfo, lastAirportInfo)
 
-    routes_file = cf.data_dir + 'routes-utf8-small.csv' #TODO: Reemplazar para la verion final del codigo
+    routes_file = cf.data_dir + 'routes-utf8-large.csv'
     routes_input_file = csv.DictReader(open(routes_file, encoding="utf-8"),
                                 delimiter=",")
     for route in routes_input_file: #Recorrec csv
@@ -83,8 +83,6 @@ def loadData(catalog):
             countEdgesDigraph += 1
         if toCount[1]:
             countEdgesGraph += 1
-
-    
 
     cities_file = cf.data_dir + 'worldcities-utf8.csv' #No cambiar lol
     cities_input_file = csv.DictReader(open(cities_file, encoding="utf-8"),

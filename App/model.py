@@ -41,15 +41,9 @@ from DISClib.Algorithms.Graphs import prim as pr
 from haversine import haversine, Unit
 import math as math
 import pandas as pd
-import csv
 assert cf
 
 import model
-#import time 
-#Iniciar: start_time = time.process_time()
-
-#Terminar: stop_time = time.process_time()
-#          print((stop_time - start_time)*1000)
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
@@ -387,8 +381,6 @@ def useMiles(catalog,miles,airports):
     longestPathDF = milesDF() #Crea el dataframe que le mostrara al usuario los aeropuertos en el camino
 
     return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
-
-    
 
 #Req 5
 def closedAirport(catalog,airportIATA):

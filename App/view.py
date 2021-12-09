@@ -44,8 +44,6 @@ def printMenu():
     print("4- Encontrar la ruta más corta entre ciudades")
     print("5- Utilizar las millas de viajero")
     print("6- Cuantificar el efecto de un aeropuerto cerrado")
-    #print("7- Comparar con servicio WEB externo")
-    #print("8- Visualizar gráficamente los requerimientos")
 
 catalog = None
 
@@ -61,7 +59,7 @@ def thread_cycle():
             print("Inicializando ....")
             catalog = controller.newCatalog()
             print("Cargando información de los archivos ....")
-            resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
+            resultado = controller.loadData(catalog) 
             print("\n=== Grafo 1 ===\n")
             print("Aeropuertos: ",resultado[0][0][0])
             print("Rutas aéreas: ",resultado[0][0][1])
@@ -81,7 +79,7 @@ def thread_cycle():
             print("Primera y ultima ciudad cargada en la estructura de datos: ")
             print(resultado[0][2][1])
             
-
+        #Req1
         elif int(inputs[0]) == 2:
             resultado = controller.findConnections(catalog)
             print("Aeropuertos conectados en la red: ",resultado[0]) #Imprimir lista
@@ -89,11 +87,10 @@ def thread_cycle():
             print("Top 5 aeropuertos interconectados: ")
             print(resultado[2])
 
-
         #Req 2
-        elif int(inputs[0]) == 3: #TODO: Modificar para que solicite datos al usuario
-            #codigo1 = input("Codigo IATA del aeropuerto 1: ")
-            #codigo2 = input("Codigo IATA del aeropuerto 2: ")
+        elif int(inputs[0]) == 3:
+            codigo1 = input("Codigo IATA del aeropuerto 1: ")
+            codigo2 = input("Codigo IATA del aeropuerto 2: ")
             codigo1 = "LED"
             codigo2 = "RTP"
             resultado = controller.findCluster(catalog,codigo1,codigo2)
@@ -104,8 +101,8 @@ def thread_cycle():
                 print("Los aeropuertos NO se encuentran en el mismo cluster.")
 
         elif int(inputs[0]) == 4:
-            ciudadOrigen = 'La Paz' #input("Ciudad de origen: ")
-            ciudadDestino = 'Saint Petersburg' #input("Ciudad de destino: ")
+            ciudadOrigen = input("Ciudad de origen: ")
+            ciudadDestino = input("Ciudad de destino: ")
             part1 = controller.getAir(catalog, ciudadOrigen, ciudadDestino)
             print(part1[0][0])
             option1 = int(input('\nSeleccione el aeropuerto de la ciudad de salida: '))
@@ -132,16 +129,15 @@ def thread_cycle():
             print(resultado[0][1][0])
             print("\n=== Paradas de la ruta ===")
             print(resultado[0][1][1])
-            
 
         #Req 4
         elif int(inputs[0]) == 5:
-            ciudad = "Lisbon" #input("Ciudad origen: ")
+            ciudad = input("Ciudad origen: ")
             parte1=controller.getAir(catalog,ciudad,ciudad) #Obtener aeropuertos de las ciudades
             print(parte1[0][0]) #Mostrar al usuario la lista de las ciudades
             seleccion = int(input("Seleccione el aeropuerto: ")) #Seleccionar un aeropuerto de los disponibles
             origen = parte1[0][1] #Seleccion de la lista de los aeropuertos de la ciudad. No importa si es parte[0] o parte[1] ya que ambas son la misma ciudad
-            millas = 19850.00 #float(input("Cantidad de millas disponibles del pasajero: "))
+            millas = float(input("Cantidad de millas disponibles del pasajero: "))
             resultado = controller.useMiles(catalog,millas,seleccion,origen) #Llamar a la funcion
             print("+++ Aeropuerto de salida para el codigo IATA:",resultado[0],"+++") #Imprime IATA
             print(resultado[1]) #Imprime Dataframe del aeropuerto
@@ -155,8 +151,7 @@ def thread_cycle():
 
         #Req5
         elif int(inputs[0]) == 6:
-            #aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
-            aeropuerto = "DXB"
+            aeropuerto = input("Código IATA del aeropuerto fuera de servicio: ")
             resultado = controller.closedAirport(catalog,aeropuerto)
             print("--- Datos originales ---")
             print("El grafo dirigido cuenta con",resultado[0][0],"aeropuertos y",resultado[0][1],"rutas.")
@@ -169,12 +164,6 @@ def thread_cycle():
             print("Los tres primeros y tres ultimoa esropuertos afectados son: ")
             print(resultado[4][1])
 
-        #elif int(inputs[0]) == 7:
-        #    pass
-
-        #elif int(inputs[0]) == 8:
-        #    pass
-
         else:
             sys.exit(0)
 
@@ -183,5 +172,3 @@ if __name__ == "__main__":
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
-
-
