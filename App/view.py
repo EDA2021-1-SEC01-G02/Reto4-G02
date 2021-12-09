@@ -63,21 +63,23 @@ def thread_cycle():
             print("Cargando información de los archivos ....")
             resultado = controller.loadData(catalog) #Tupla que contiene catalogo y mas tuplas con la info solicitada. Una para cada grafo
             print("\n=== Grafo 1 ===\n")
-            print("Aeropuertos: ",resultado[0][0])
-            print("Rutas aéreas: ",resultado[0][1])
+            print("Aeropuertos: ",resultado[0][0][0])
+            print("Rutas aéreas: ",resultado[0][0][1])
+            print("Nodes:",resultado[1][0],"& Edges:",resultado[1][1])
             print("Primer y ultimo aeropuerto cargado en el grafo: ")
-            print(resultado[0][2])
+            print(resultado[0][0][2])
             
             print("\n=== Grafo 2 ===\n")
-            print("Aeropuertos: ",resultado[1][0])
-            print("Rutas aéreas: ",resultado[1][1])
+            print("Aeropuertos: ",resultado[0][1][0])
+            print("Rutas aéreas: ",resultado[0][1][1])
+            print("Nodes:",resultado[1][0],"& Edges:",resultado[1][2])
             print("Primer y ultimo aeropuerto cargado en el grafo: ")
-            print(resultado[0][2])
+            print(resultado[0][0][2])
 
             print("\n=== Red de ciudades ===\n")
-            print("Numero de ciudades: ",resultado[2][0])
+            print("Numero de ciudades: ",resultado[0][2][0])
             print("Primera y ultima ciudad cargada en la estructura de datos: ")
-            print(resultado[2][1])
+            print(resultado[0][2][1])
             
 
         elif int(inputs[0]) == 2:

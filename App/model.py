@@ -227,15 +227,21 @@ def routes(catalog, route):
     addRoutesByDep(catalog['allRoutes'] , route)
     vertexDep = getIDbyIATA(catalog,route["Departure"]) #Conversion del IATA a id
     vertexDes = getIDbyIATA(catalog,route["Destination"]) #Lo de arriba
+    edgeDigraph = False
+    edgeGraph = False
     weight = float(route["distance_km"])
+    edgeDi = gr.getEdge(catalog['routes'], vertexDep, vertexDes) 
+    if edgeDi is None:
+        edgeDigraph = True
     gr.addEdge(catalog["routes"],vertexDep,vertexDes,weight) #Añadir arco al grafo dirigido
     edge = gr.getEdge(catalog['connections'], vertexDep, vertexDes)
-    print(edge)
     if edge is None:
         gr.addEdge(catalog["connections"],vertexDep,vertexDes,weight) #Añade arco al grafo no dirigido
+        edgeGraph = True
     else:
         if weight < edge["weight"]:
-            edge["weight"] = weight    
+            edge["weight"] = weight   
+    return (edgeDigraph,edgeGraph)
 
 def addRoutesByDep(catalog, route):
     if not mp.contains(catalog, route['Departure']):
@@ -374,11 +380,10 @@ def useMiles(catalog,miles,airports):
     airportDF = onlyOneDF(airport) #Crea el DataFrame que se le mostrara al usuario sobre los datos del aeropuerto
     kilometers = miles*1.60 #Conversion de millas a kilometros
     mst = pr.PrimMST(catalog["connections"]) #Algoritmo de Prim
-    prim = pr.prim(catalog["connections"],mst,airportid)
-    scan = pr.scan(catalog["connections"],prim,airportid)
-    print(scan)
+    scan = pr.scan(catalog["connections"],mst,airportid)
+    
     airportsNum = pr.edgesMST(catalog["connections"],scan)
-    airportsSum = None
+    airportsSum = pr.weightMST(catalog["connections"],scan)
     longestPathDistance = None
     longestPathDF = milesDF()
 
