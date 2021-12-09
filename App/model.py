@@ -375,19 +375,18 @@ def findCluster(catalog,IATA1,IATA2):
 
 #Req4
 def useMiles(catalog,miles,airports):
-    airport = lt.getElement(airports,1) #Obtiene los datos del aeropuerto seleccionado
+    airport = lt.getElement(airports,1) #Obtiene los datos del aeropuerto seleccionado de entre la lista
     airportid = int(airport["id"]) #Obtiene el id del aeropuerto
     airportDF = onlyOneDF(airport) #Crea el DataFrame que se le mostrara al usuario sobre los datos del aeropuerto
     kilometers = miles*1.60 #Conversion de millas a kilometros
-    mst = pr.PrimMST(catalog["connections"]) #Algoritmo de Prim
-    scan = pr.scan(catalog["connections"],mst,airportid)
+    mst = pr.PrimMST(catalog["connections"]) #Algoritmo de Prim aplicado al grafo no dirigido
     
-    airportsNum = pr.edgesMST(catalog["connections"],scan)
-    airportsSum = pr.weightMST(catalog["connections"],scan)
-    longestPathDistance = None
-    longestPathDF = milesDF()
+    airportsNum = pr.edgesMST(catalog["connections"],mst) #Pila con el camino entre source y aeropuerto. Posiblemente para usar en longestPathDF
+    airportsSum = pr.weightMST(catalog["connections"],mst) #Teoricamente muestra el peso total del grafo
+    longestPathDistance = pr.scan(catalog["connections"],mst,airportid) #Teoricamente muestra el peso para llegar de source a la ciudad. Es infinito si es que no hay camino (Retorna toda la ruta)
+    longestPathDF = milesDF() #Crea el dataframe que le mostrara al usuario los aeropuertos en el camino
 
-    #return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
+    return (airport["IATA"],airportDF,airportsNum,airportsSum,kilometers,longestPathDistance,longestPathDF)
 
     
 

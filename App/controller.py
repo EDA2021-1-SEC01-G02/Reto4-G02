@@ -111,8 +111,8 @@ def findCluster(catalog,IATA1,IATA2): #Req2
     return model.findCluster(catalog,IATA1,IATA2)
 
 def useMiles(catalog,miles,indice1,inicio): #Req 4
-    dep = model.lt.getElement(inicio,indice1)
-    depAir = model.getAirports(catalog["airCity"],dep["city"])
+    dep = model.lt.getElement(inicio,indice1) #Obtiene los datos de la ciudad seleccionada por el usuario de entre la lista
+    depAir = model.getAirports(catalog["airCity"],dep["city"]) #Obtiene los aeropuertos de la ciudad
     return model.useMiles(catalog,miles,depAir)
 
 def closedAirport(catalog,airportIATA): #Req5
